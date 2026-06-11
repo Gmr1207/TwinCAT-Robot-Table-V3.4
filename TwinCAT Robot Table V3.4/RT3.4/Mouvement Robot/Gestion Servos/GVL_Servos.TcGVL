@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_Servos" Id="{76f2f276-1c19-4fdf-bc35-f82b4970f258}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+
+// Variables Servos
+
+I_Servo_1_D : AXIS_REF ;
+I_Servo_2_G : AXIS_REF ;	
+
+
+Id_CodeurextGauche1                   : AXIS_REF                                    ;
+	Id_CodeurextDroite1                  : AXIS_REF  ;
+
+// Variables HMI
+
+
+
+
+
+// Variables HMI Test Hoaming
+Mx_Hoaming_BUSY : BOOL ;
+Ix_Test : BOOl ;
+Ix_HoamingPos_Testeur_12                   : BOOL                                     ; 
+QX_Hoaming_Fini : BOOL ;
+	
+	PowerMoteur: BOOL;
+	BpReset: BOOL;
+	BpDeplacement: BOOL;
+	BpFastStop: BOOL;
+	Modedeplacement: INT;
+	PosXObject: LREAL;
+	PosYObject: LREAL;
+	BpInverserAngle: BOOL;
+	BpMarcheArriere: BOOL;
+	ObjectifAngle: LREAL;
+	ObjectifDistance: LREAL;
+	ReglageStop: LREAL := 1000 ;
+	ReglageAcceleration: LREAL := 400 ;
+	ReglageVitesse: LREAL :=400  ; 
+	QxDeplacementActif: BOOL;
+	QxDeplacementDone: BOOL;
+	QxErreur: BOOL;
+	QxRotation: BOOL;
+	QxDeplacementAvant: BOOL;
+	QxDeplacementArriere: BOOL;
+	QxPowerOk: BOOL;
+	Qx_CpDone: BOOL ;
+	In_CoupleDroite: INT := 20;
+	In_CoupleGauche: INT := 20;
+	In_CoupleTotal: INT := 20 ;
+	Step_Hoaming : INT ;
+	Set_Pos : BOOL;
+	Set_Pos_Pret : BOOl ;
+	// Test
+	Ix_TestCodeur  : BOOL ;
+	
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

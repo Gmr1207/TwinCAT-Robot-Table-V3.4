@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Task Name="Task_Lidar" Id="{1ef5a820-bc00-4af2-ada1-88958a28586a}">
+    <!--CycleTime in micro seconds.-->
+    <CycleTime>10000</CycleTime>
+    <Priority>5</Priority>
+    <TaskFBGuid>{12a5a981-7b5a-4dd2-a7a6-ffaf751ac584}</TaskFBGuid>
+    <Fb_init>{a75b7271-ec30-4b6b-91d6-014767b58bb2}</Fb_init>
+    <Fb_exit>{e9b19bdd-fc49-405b-9789-93432af41096}</Fb_exit>
+    <CycleUpdate>{2ef2984d-a723-4d28-8bda-dec66e8713c2}</CycleUpdate>
+    <PostCycleUpdate>{341c713c-2a8a-49fd-a997-28e5530a2217}</PostCycleUpdate>
+  </Task>
+</TcPlcObject>

@@ -1,0 +1,482 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="P_Dynamixel" Id="{039e7006-5fba-4e91-a0ed-e2503922bc18}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM P_Dynamixel
+VAR
+//--------------FB de gestion du U2D2--------------
+	U2D2 : FB_U2D2_V3 := (udiComPort:= 5, udiBaudrate:= 115200);
+	//--------------FB de gestion des dynamixels--------------
+	fbDXL : ARRAY[1..1] OF FB_DXL := [
+	(sCSVFilePath    := 'C:\Users\Administrator\Desktop\DXL\DXL_1.csv',
+	 sFonction       := 'Rot. 1. Droite',
+	 ID              := 1,
+	 MaxTorque       := 250,
+	 Reverse         := FALSE,
+	 TorqueStartup   := FALSE,
+	 bHomingMode     := FALSE,
+	 iHomingVelocity := -300,
+	 wHomingTorque   := 100,
+	 wMoveVelocity   := 855,
+	 wPosTolerance   := 100)];
+	//--------------FB de gestion de synchronisation des dynamixels--------------
+	// fbSyncRot1 : FB_SyncDXL;  // Commenté — inutile avec 1 seul DXL
+	// bInit : BOOL;              // Commenté — lié à fbSyncRot1
+
+	//--------------Variable de fonctionnement de la Visu--------------
+	aDXL_Database    : ARRAY[0..UDINT_TO_DINT(MAX_CSV_COLUMNS), 0..UDINT_TO_DINT(MAX_CSV_ROWS)] OF T_MaxString;
+	byTableIndexSel  : BYTE;
+	bDone            : BOOL;
+	iStep            : INT := 0;
+	E_DesiredFunction: E_DXL_Fonction;
+	stDxlPosition    : ST_DXL_Position;
+	eStatus          : ARRAY[0..252] OF E_Packet_Status;
+	ALLHomed         : BOOL;
+	bAllStatusOK     : BOOL;
+	diDepl           : DINT(-1048575..1048575);
+	DXL_Sel          : POINTER TO FB_DXL;
+	diRead           : DINT;
+	DXL_Sel_Pos      : DINT;
+	fbTimerGetPos    : TON := (PT:= T#500MS);
+	sRenamePos       : T_MaxString;
+	udiI             : UDINT;
+	udiJ             : UDINT;
+
+	//--------------Variables Mon Programme--------------
+	iStepProgrammeHoaming                   : INT;
+	iStepProgrammeAU                        : INT;
+	iStepProgrammeLampePasHoamingClignotante: INT;
+	iStepProgrammeMouvement                 : INT;
+	Mx_NotHoaming                           : BOOL;
+	Mx_Hoaming                              : BOOL;
+	TimerBlinkHoamingLampe                  : TON;
+	Mx_AU                                   : BOOL;
+	BpBas_Rtrig                             : R_TRIG;
+	BpMillieu_Rtrig                         : R_TRIG;
+	BpHaut_Rtrig                            : R_TRIG;
+	BpHoaming_Rtrig                         : R_TRIG;
+	Mx_EnMouvement                          : BOOL;
+	bHomingActive                           : BOOL;
+	Mx_BpsAUHoaming                         : BOOL;
+	Mx_BpHomeAUHoaming                      : BOOL;
+	Ix_HoamingAU_Auto                       : BOOL;
+
+	//--------------Variable de test--------------
+	TestPos         : DINT;
+	TestBool        : ARRAY[0..1] OF BOOL;
+	TestHomingSensor: BOOL;
+
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//--------------FB de gestion du U2D2--------------
+U2D2();
+//--------------FB de gestion des dynamixels--------------
+FOR udiI := 1 TO 1 DO
+	fbDXL[udiI](U2D2:= U2D2);
+END_FOR
+ 
+// fbSyncRot1(U2D2:= U2D2);       // Commenté — inutile avec 1 seul DXL
+// IF NOT bInit THEN
+// 	fbSyncRot1.AddDynamixel(ADR(fbDXL[1]));
+// 	bInit := TRUE;
+// END_IF
+ 
+//--------------Fonctionnement de la Visu--------------
+ALLHomed := TRUE;
+FOR udiI := 1 TO 1 DO
+	IF NOT fbDXL[udiI].HomingDone THEN
+		ALLHomed := FALSE;
+		EXIT;
+	END_IF
+END_FOR
+ 
+bAllStatusOK := TRUE;
+FOR udiI := 1 TO 1 DO
+	IF fbDXL[udiI].Error THEN
+		bAllStatusOK := FALSE;
+		EXIT;
+	END_IF
+END_FOR
+ 
+fbTimerGetPos();
+ 
+CASE iStep OF
+ 
+	E_DXL_Fonction.AllHoming: // Homing
+		bDone := TRUE;
+		FOR udiI := 1 TO 1 DO
+			IF NOT fbDXL[udiI].HomingDone AND NOT fbDXL[udiI].Error THEN
+				fbDXL[udiI].Homing();
+				bDone := FALSE;
+			END_IF
+		END_FOR
+		IF bDone THEN
+			iStep := 0;
+		END_IF
+ 
+	E_DXL_Fonction.AllDesactiveTorque: // Désactiver le torque pour tous
+		IF U2D2.Write(ADR(eStatus), 254, E_DXL.Torque_Enable, 1, 0) THEN
+			iStep := 0;
+		END_IF
+ 
+	E_DXL_Fonction.ResetAll: // Reset tous les dynamixels
+		FOR udiI := 1 TO 1 DO
+			fbDXL[udiI].Reset();
+		END_FOR
+		// fbSyncRot1.Reset();   // Commenté
+		iStep := 0;
+ 
+	E_DXL_Fonction.Return_: // Retour
+		VisuElems.CURRENTVISU := 'DXL_GUI';
+		E_DesiredFunction := E_DXL_Fonction.Nothing;
+		iStep := 0;
+ 
+	E_DXL_Fonction.ReadCSV: // Lire le Tableau de position
+		FOR udiI := 0 TO MAX_CSV_ROWS DO
+			aDXL_Database[0, udiI] := '';
+			aDXL_Database[1, udiI] := '';
+			aDXL_Database[2, udiI] := '';
+		END_FOR
+		FOR udiI := 0 TO MAX_CSV_ROWS DO
+			stDxlPosition := DXL_Sel^.GetDatabase(udiI);
+			IF stDxlPosition.byIndex <> 0 THEN
+				aDXL_Database[0, stDxlPosition.byIndex-1] := UDINT_TO_STRING(udiI);
+				aDXL_Database[1, stDxlPosition.byIndex-1] := stDxlPosition.sName;
+				aDXL_Database[2, stDxlPosition.byIndex-1] := DINT_TO_STRING(stDxlPosition.diPos);
+			END_IF
+		END_FOR
+		iStep := E_DXL_Fonction.Idle;
+ 
+	E_DXL_Fonction.Idle: // lire la position du dynamixel sélectionné
+		IF E_DesiredFunction <> E_DXL_Fonction.Nothing THEN
+			iStep := E_DesiredFunction;
+		ELSE
+			fbTimerGetPos.IN := TRUE;
+			IF fbTimerGetPos.Q THEN
+				iStep := E_DXL_Fonction.GetPos;
+			END_IF
+		END_IF
+ 
+	E_DXL_Fonction.GetPos:
+		fbTimerGetPos.IN := FALSE;
+		IF DXL_Sel^.GetActPosition(diPos=> diRead) OR DXL_Sel^.Error THEN
+			DXL_Sel_Pos := diRead;
+			iStep := E_DXL_Fonction.Idle;
+		END_IF
+ 
+	E_DXL_Fonction.ToggleTorque:
+		IF DXL_Sel^.ToggleTorque() THEN
+			E_DesiredFunction := E_DXL_Fonction.Nothing;
+			iStep := E_DXL_Fonction.Idle;
+		END_IF
+ 
+	E_DXL_Fonction.Homing:
+		IF DXL_Sel^.Homing() OR DXL_Sel^.Error THEN
+			E_DesiredFunction := E_DXL_Fonction.Nothing;
+			iStep := E_DXL_Fonction.Idle;
+		END_IF
+ 
+	E_DXL_Fonction.MoveABS:
+		IF DXL_Sel^.MoveAbs(diDepl) OR DXL_Sel^.Error THEN
+			E_DesiredFunction := E_DXL_Fonction.Nothing;
+			iStep := E_DXL_Fonction.Idle;
+		END_IF
+ 
+	E_DXL_Fonction.MoveREL:
+		IF DXL_Sel^.MoveRel(diDepl) OR DXL_Sel^.Error THEN
+			E_DesiredFunction := E_DXL_Fonction.Nothing;
+			iStep := E_DXL_Fonction.Idle;
+		END_IF
+ 
+	E_DXL_Fonction.Reset:
+		DXL_Sel^.Reset();
+		E_DesiredFunction := E_DXL_Fonction.Nothing;
+		iStep := E_DXL_Fonction.Idle;
+ 
+	E_DXL_Fonction.NewPosition:
+		DXL_Sel^.CreatePosition(byTableIndexSel, DXL_Sel_Pos);
+		E_DesiredFunction := E_DXL_Fonction.Nothing;
+		iStep := E_DXL_Fonction.ReadCSV;
+ 
+	E_DXL_Fonction.RenamePosition:
+		DXL_Sel^.RenamePosition(STRING_TO_BYTE(aDXL_Database[0, byTableIndexSel]), sRenamePos);
+		E_DesiredFunction := E_DXL_Fonction.Nothing;
+		iStep := E_DXL_Fonction.ReadCSV;
+ 
+	E_DXL_Fonction.GoToPosition:
+		IF aDXL_Database[0, byTableIndexSel] <> '' THEN
+			IF DXL_Sel^.MovePosition(STRING_TO_BYTE(aDXL_Database[0, byTableIndexSel])) THEN
+				E_DesiredFunction := E_DXL_Fonction.Nothing;
+				iStep := E_DXL_Fonction.Idle;
+			END_IF
+		ELSE
+			E_DesiredFunction := E_DXL_Fonction.Nothing;
+			iStep := E_DXL_Fonction.Idle;
+		END_IF
+ 
+	E_DXL_Fonction.SetPosition:
+		DXL_Sel^.SetPosition(STRING_TO_BYTE(aDXL_Database[0, byTableIndexSel]), DXL_Sel_Pos);
+		E_DesiredFunction := E_DXL_Fonction.Nothing;
+		iStep := E_DXL_Fonction.ReadCSV;
+ 
+	E_DXL_Fonction.Save:
+		IF DXL_Sel^.WriteCSV() OR DXL_Sel^.Error THEN
+			E_DesiredFunction := E_DXL_Fonction.Nothing;
+			iStep := E_DXL_Fonction.ReadCSV;
+		END_IF
+ 
+	E_DXL_Fonction.Cancel:
+		IF DXL_Sel^.ReadCSV() OR DXL_Sel^.Error THEN
+			E_DesiredFunction := E_DXL_Fonction.Nothing;
+			iStep := E_DXL_Fonction.ReadCSV;
+		END_IF
+ 
+	E_DXL_Fonction.Delete:
+		DXL_Sel^.DeletePosition(STRING_TO_BYTE(aDXL_Database[0, byTableIndexSel]));
+		E_DesiredFunction := E_DXL_Fonction.Nothing;
+		iStep := E_DXL_Fonction.ReadCSV;
+ 
+END_CASE
+
+//*******************************************Mon Programme***********************************************************************
+
+
+
+// Verifier si Hoaming Fait 
+
+IF NOT fbDXL[1].HomingDone  THEN     // si pas Bloquer les boutons de pos.
+Mx_NotHoaming := 1 ;
+Mx_Hoaming := 0 ;
+GVL_Dynamixel.Qx_LampeHoamingFait := 0;
+GVL_Dynamixel.Qx_LampeHoamingPasFait := 1;
+GVL_Dynamixel.Mx_LampeHoamingPasFait :=1;
+iStepProgrammeHoaming := 0; 
+END_IF
+
+IF fbDXL[1].HomingDone AND NOT Mx_AU THEN    // Si Oui Debloquer les boutons de pos.
+Mx_NotHoaming := 0 ;
+Mx_Hoaming := 1 ;
+GVL_Dynamixel.Qx_LampeHoamingFait := 1;
+GVL_Dynamixel.Qx_LampeHoamingPasFait := 0;
+// GVL_Dynamixel.Mx_LampeHoamingPasFait :=0;
+iStepProgrammeLampePasHoamingClignotante :=0;
+
+END_IF
+
+// Lampe Hoaming
+
+CASE iStepProgrammeLampePasHoamingClignotante OF
+
+0:
+    IF Mx_NotHoaming AND NOT Mx_AU THEN
+        iStepProgrammeLampePasHoamingClignotante := 1;
+    ELSE
+        GVL_Dynamixel.Qx_LampeHoamingPasFait := 0;
+    END_IF
+
+1:
+    GVL_Dynamixel.Qx_LampeHoamingPasFait := 1;
+    TimerBlinkHoamingLampe(IN := TRUE, PT := T#1S);
+    IF TimerBlinkHoamingLampe.Q THEN
+        TimerBlinkHoamingLampe(IN := FALSE);
+        iStepProgrammeLampePasHoamingClignotante := 2;
+    END_IF
+
+2:
+    GVL_Dynamixel.Qx_LampeHoamingPasFait := 0;
+    TimerBlinkHoamingLampe(IN := TRUE, PT := T#1S);
+    IF TimerBlinkHoamingLampe.Q THEN
+        TimerBlinkHoamingLampe(IN := FALSE);
+        iStepProgrammeLampePasHoamingClignotante := 1;
+    END_IF
+
+END_CASE
+
+// Case AU 
+   
+
+CASE iStepProgrammeAU  OF 
+
+0:
+
+IF GVL_Base.Qx_AU   THEN        // si appuyé
+	Mx_AU := 1;
+    GVL_Dynamixel.Qx_LampeAU :=1;
+	GVL_Dynamixel.Qx_LampeHoamingFait := 0;
+	iStepProgrammeLampePasHoamingClignotante :=0;
+	GVL_Dynamixel.Qx_LampeHoamingFait := 0;
+	U2D2.Write(ADR(eStatus), 254, E_DXL.Torque_Enable, 1, 0);
+	iStepProgrammeMouvement :=0;
+	iStepProgrammeAU := 1;
+END_IF
+
+
+ 1:   
+IF  NOT GVL_Base.Qx_AU AND Mx_AU THEN   // si desactivé
+	Mx_AU := 0;
+    GVL_Dynamixel.Qx_LampeAU :=0;
+	U2D2.Write(ADR(eStatus), 254, E_DXL.Torque_Enable, 1, 1);
+	FOR udiI := 1 TO 1 DO
+		fbDXL[udiI].Reset();
+		END_FOR
+	Ix_HoamingAU_Auto := 1;
+	iStepProgrammeMouvement:= 0;
+END_IF 
+
+
+   
+END_CASE
+
+
+// Movement Bas Millieu Haut
+
+
+BpBas_Rtrig(CLK := GVL_Dynamixel.IX_Bas);
+BpMillieu_Rtrig(CLK := GVL_Dynamixel.Ix_Millieu);
+BpHaut_Rtrig(CLK := GVL_Dynamixel.Ix_Haut);
+
+// lampe Stop 
+
+
+CASE iStepProgrammeMouvement OF 
+	
+
+0:  iStepProgrammeMouvement := 0 ; 
+
+
+ IF BpBas_Rtrig.Q THEN iStepProgrammeMouvement := 1 ; 
+	
+END_IF
+
+IF BpMillieu_Rtrig.Q THEN iStepProgrammeMouvement := 2 ; 
+	
+END_IF
+
+IF BpHaut_Rtrig.Q THEN iStepProgrammeMouvement := 3 ; 
+	
+END_IF
+      
+
+1: IF  iStepProgrammeMouvement = 1 AND NOT Mx_AU AND fbDXL[1].HomingDone THEN
+	  IF fbDXL[1].MovePosition(byPosIndex:= 0 ) OR  GVL_Dynamixel.Ix_Stop = 1   THEN
+		iStepProgrammeMouvement := 0 ; 
+		
+	END_IF
+END_IF   
+  
+(*IF GVL_Dynamixel.Ix_Stop = 1THEN 
+	iStepProgrammeMouvement := 0 ; 
+END_IF *) 
+
+2: IF  iStepProgrammeMouvement = 2 AND NOT Mx_AU AND fbDXL[1].HomingDone THEN
+	  IF fbDXL[1].MovePosition(byPosIndex:= 1 )   THEN
+		iStepProgrammeMouvement := 0 ; 
+		
+	END_IF
+END_IF
+
+
+3: IF  iStepProgrammeMouvement = 3 AND NOT Mx_AU AND fbDXL[1].HomingDone THEN
+	  IF fbDXL[1].MovePosition(byPosIndex:= 2 )  THEN
+		iStepProgrammeMouvement := 0 ; 
+
+	END_IF
+END_IF
+		
+1000: GVL_Dynamixel.Ix_Hoaming := 0;
+      iStepProgrammeMouvement := 0 ; 
+
+     
+
+
+END_CASE
+
+
+// Verification de mouvement ou Hoaming
+
+IF iStepProgrammeMouvement > 0 OR bHomingActive THEN 
+  Mx_EnMouvement := 1;
+ELSE 
+  Mx_EnMouvement := 0;	
+END_IF
+
+
+// Hoaming Poste De Controle
+
+BpHoaming_Rtrig(CLK :=GVL_Dynamixel.Ix_Hoaming OR Ix_HoamingAU_Auto );
+
+//-----------------------------------------------------------
+// 1) LANCER LE HOMING (depuis un bouton StartHoming)
+//-----------------------------------------------------------
+IF BpHoaming_Rtrig.Q AND NOT bHomingActive AND  NOT Mx_AU  THEN
+	Ix_HoamingAU_Auto := 0;
+    bHomingActive := TRUE;
+END_IF;
+
+
+//-----------------------------------------------------------
+// 2) CODE HOMING AVEC MÉMOIRE (TON CODE + LA MEMOIRE)
+//-----------------------------------------------------------
+IF bHomingActive THEN
+
+    bDone := TRUE;
+
+    FOR udiI := 1 TO 1 DO
+        IF NOT fbDXL[udiI].HomingDone
+           AND NOT fbDXL[udiI].Error THEN
+
+            fbDXL[udiI].Homing();
+            bDone := FALSE;
+
+        END_IF
+    END_FOR
+
+    //-------------------------------------------------------
+    // 3) FIN DU HOMING → RESET MÉMOIRE
+    //-------------------------------------------------------
+    IF bDone THEN
+        bHomingActive := FALSE;
+    END_IF
+
+END_IF
+
+
+(* // Lampe Status ( Option Future !!!! )
+
+IF NOT  fbDXL_XC430[1].Error THEN 
+	
+GVL_Dynamixel.Qx_LampeStat := TRUE ;   // Status ok XC430 (1) = Lampe allumée 
+
+ELSE 
+
+GVL_Dynamixel.Qx_LampeStat := FALSE;  // Status pas ok XC430 (1) = Lampe éteinte
+
+END_IF *)
+
+// Boutons Positions Bloqués Quand AU ou Hoaming Pas fait
+
+IF NOT Mx_AU AND Mx_Hoaming  THEN 
+	
+Mx_BpsAUHoaming := 0;
+
+ELSE
+	
+Mx_BpsAUHoaming := 1;
+END_IF
+
+
+
+// Hoaming Bloqué Hoaming Pas Fait 
+
+IF Mx_AU OR ( NOT Mx_AU AND Mx_Hoaming )  THEN 
+	
+Mx_BpHomeAUHoaming := 1;
+
+ELSE
+	
+Mx_BpHomeAUHoaming := 0;
+END_IF
+
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

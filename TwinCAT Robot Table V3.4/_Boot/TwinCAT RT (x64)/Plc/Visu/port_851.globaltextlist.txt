@@ -1,0 +1,72 @@
+Id;Default
+360; Hoaming Fait
+326; Homing Pas Fait
+941;%d
+349;%f 
+770;%s
+91;Activation Turbine Faite
+481;Aller à la position
+391;Angle (*)
+271;Angle (Degrés)
+510;Annuler
+595;Ativation Moteur Brusheless
+247;AU
+601;AU Activé
+977;Buffer load : %d%%
+801;Depl. Actif
+75;Depl. Arriere
+477;Depl. Avant
+84;Depl. Done
+48;Desactivation Moteur Brusheless
+534;Déplacement$R$NAbsolu
+223;Déplacement$R$NRelatif
+468;Désac. Torque
+190;Entrees
+588;Erreur
+550;Evitement
+61;Fast Stop
+120;Hoaming 3 Axes 
+620;Homing
+346;ID : %d
+392;Inverser l$'angle
+101;Lampes 
+37;Marche
+704;Marche Arriere
+888;Mettre Pos
+350;Mode de Deplacement (ABS = 0 / Rel = 1 / Torque = 2 )
+519;Nouvelle$R$Nposition
+268;OFF
+596;ON
+880;Option
+307;Pos. Bas
+169;Pos. Haut
+993;Pos. Millieu
+571;Position :$R$N%d
+404;Position X (mm)
+269;Position Y (mm)
+313;Power Moteurs 
+442;Power OK
+263;Renommer
+390;Reset
+233;Reset All
+170;Reset Moteurs
+765;Retour
+784;Rot. Actif
+339;Sauvegarder
+478;Selecteur ON / OFF ESC
+714;Set position
+731;Start Deplacement
+80;Statut
+89;Stop
+834;Supprimer
+17;Torque
+448;Visu Base
+342;Visu Config Dyna
+380;Visu Lancement PY + Steam
+280;Visu LIDAR
+21;Visu Moteur Base
+351;Visu Moteur Test
+581;Visu Pince
+987;Visu Selection De Zone (LIDAR)
+186;Visu Turbine
+511;Vitesse Moteur Brushless en s

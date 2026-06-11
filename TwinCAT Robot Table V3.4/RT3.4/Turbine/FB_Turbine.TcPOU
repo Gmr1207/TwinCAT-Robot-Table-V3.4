@@ -1,0 +1,178 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Turbine" Id="{da52498a-5db8-4250-94f7-f54a50ff75fb}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Turbine
+VAR_INPUT
+
+   //Entrees HMI
+
+Ix_BpStartMoteur_SoufleuseHMI : BOOL ;
+Ix_BpStopMoteur_SoufleuseHMI : BOOL ;
+Ix_OrdreTourEnSecondes : REAL ;
+Ix_BpSelecteurOnOff : BOOL ;   
+
+END_VAR
+VAR_OUTPUT
+
+ //Sorties HMI
+Qx_LampeEnMouvement_SoufleuseHMI : BOOL ;
+Qx_LampeArret_SoufleuseHMI : BOOL ;
+Qx_LampeAtivationFaite_SoufleuseHMI : BOOL ;
+Qx_TourEnSecondes : LREAL ;
+
+// Sample de min 1s
+
+Qi_SampleBase_10 : INT ;	
+Qi_SampleBase_20 : INT ;
+Qi_SampleBase_30 : INT ;
+Qi_SampleBase_40 : INT ;
+Qi_SampleBase_50 : INT ;
+
+// Sample 1-2 s max
+
+Qi_SampleMoteur_Vit1 : INT ;	
+Qi_SampleMoteur_Vit2 : INT ;
+Qi_SampleMoteur_Vit3 : INT ;	
+Qi_SampleMoteur_Vit4 : INT ;
+Qi_SampleMoteur_Vit5 : INT ;
+
+END_VAR
+VAR
+
+// Variable Vout
+
+Vout : INT;
+
+// Memoires P-Trig ou TON/TOF/TP
+
+Mft_BpStartMoteur_SoufleuseHMI : R_TRIG ; 
+Mrt_BpStopMoteur_SoufleuseHMI :  R_TRIG ;
+Mx_TP_LampeActivation : TP;
+
+// Memoires Fonctionnement
+
+Mx_Activation :BOOL;
+
+
+//Memoires Lampes
+
+Mx_LampeStop : BOOL;
+Mx_LampeMarche :BOOL;
+Mx_LampeActivationTurbine :BOOL;
+BlinkTimer: TON;
+
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Memoires P_TRIG
+
+Mft_BpStartMoteur_SoufleuseHMI(CLK := Ix_BpStartMoteur_SoufleuseHMI );
+
+Mrt_BpStopMoteur_SoufleuseHMI(CLK := Ix_BpStopMoteur_SoufleuseHMI );
+
+
+
+//Start / Stop
+
+IF Mft_BpStartMoteur_SoufleuseHMI.Q AND Ix_OrdreTourEnSecondes = 10 THEN 
+Mx_LampeMarche := 1;	
+END_IF
+
+IF Mrt_BpStopMoteur_SoufleuseHMI.Q THEN 
+Mx_LampeMarche := 0;
+END_IF
+
+
+// Lampe Validation
+
+
+
+
+IF Mx_LampeMarche AND ( NOT Qx_LampeEnMouvement_SoufleuseHMI )
+   THEN
+ Qx_LampeAtivationFaite_SoufleuseHMI := 1;  // Toggle ON/OFF
+    BlinkTimer(IN := FALSE);    // Reset du TON
+    BlinkTimer(IN := TRUE);     // Rela
+
+
+ELSIF Qx_LampeEnMouvement_SoufleuseHMI OR ( NOT Mx_LampeMarche ) THEN
+Qx_LampeAtivationFaite_SoufleuseHMI := 0;
+ 
+
+ 
+END_IF
+
+
+
+
+// Activation Marche
+
+IF Ix_BpSelecteurOnOff THEN
+	
+// Variables Base 50% 
+
+Qi_SampleBase_10 := 16384;
+Qi_SampleBase_20 := 16384;
+Qi_SampleBase_30 := 16384;
+Qi_SampleBase_40 := 16384;
+Qi_SampleBase_50 := 16384;
+Vout:= 16384;
+
+
+ELSE
+	
+Qi_SampleBase_10 := 0;
+Qi_SampleBase_20 := 0;
+Qi_SampleBase_30 := 0;
+Qi_SampleBase_40 := 0;
+Qi_SampleBase_50 := 0;
+Vout:= 0;
+Mx_LampeMarche := 0;
+
+
+END_IF
+
+
+
+// Vitesse Turbine Variable
+IF Ix_OrdreTourEnSecondes = 10 OR (NOT Mx_LampeMarche ) THEN
+Qx_LampeEnMouvement_SoufleuseHMI := 0 ;	
+Qx_LampeArret_SoufleuseHMI := 1 ;	
+
+	
+END_IF
+
+IF Ix_OrdreTourEnSecondes > 10 AND Mx_LampeMarche THEN
+	Qi_SampleMoteur_Vit1 := 16384;
+	Qx_LampeEnMouvement_SoufleuseHMI := 1 ;
+	Qx_LampeArret_SoufleuseHMI := 0 ;
+ELSE
+	Qi_SampleMoteur_Vit1 := 0;
+END_IF
+
+IF Ix_OrdreTourEnSecondes > 12 AND Mx_LampeMarche THEN
+	Qi_SampleMoteur_Vit2 := 16384;
+ELSE
+	Qi_SampleMoteur_Vit2 := 0;
+END_IF
+
+IF Ix_OrdreTourEnSecondes > 14 AND Mx_LampeMarche THEN
+	Qi_SampleMoteur_Vit3:= 16384;
+ELSE
+	Qi_SampleMoteur_Vit3 := 0;
+END_IF
+
+IF Ix_OrdreTourEnSecondes > 16 AND Mx_LampeMarche THEN
+	Qi_SampleMoteur_Vit4 := 16384;
+ELSE
+	Qi_SampleMoteur_Vit4 := 0;
+END_IF
+
+IF Ix_OrdreTourEnSecondes > 18 AND Mx_LampeMarche THEN
+	Qi_SampleMoteur_Vit5 := 16384;
+ELSE
+	Qi_SampleMoteur_Vit5 := 0;
+END_IF]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

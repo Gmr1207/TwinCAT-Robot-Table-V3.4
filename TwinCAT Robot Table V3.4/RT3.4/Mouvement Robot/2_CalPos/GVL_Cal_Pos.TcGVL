@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_Cal_Pos" Id="{772c2a16-a1a0-49d1-9338-89f8277251c5}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+	IrPosX                          : LREAL                                    ;
+	IrPosY                          : LREAL                                    ;
+    IrPosAngle                      : LREAL                                    ;
+	Ix_HoamingPos                   : BOOL                                     ; 
+	
+    (*Id_CodeurextGauche1                   : AXIS_REF                                    ;
+	Id_CodeurextDroite1                  : AXIS_REF                                    ;*)
+END_VAR
+
+VAR_GLOBAL CONSTANT
+	lrDistEntraxeRoue 				: LREAL := 230.6875782       ;
+	lrEntraxeCodeur					: LREAL := 275.188037765281 ;
+	IrPosXDebut                     : LREAL := 150                              ;
+	IrPosYDebut                     : LREAL := 171                               ;
+	IrPosAngleDebut                 : LREAL := 90                              ;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

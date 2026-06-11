@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Task Name="Task_Deplacement" Id="{ff8a5d02-1b24-481e-9603-e047a4d86d10}">
+    <!--CycleTime in micro seconds.-->
+    <CycleTime>2000</CycleTime>
+    <Priority>6</Priority>
+    <PouCall>
+      <Name>POU_Servo_Mouvement</Name>
+    </PouCall>
+    <TaskFBGuid>{068423da-6076-4b51-a8b7-287b79af1c98}</TaskFBGuid>
+    <Fb_init>{cd2bf0c5-45f3-45ba-8969-e72de7dfe782}</Fb_init>
+    <Fb_exit>{62a3163b-03e5-48e9-9cb5-0df9e905bfe2}</Fb_exit>
+    <CycleUpdate>{77308c66-4528-4d02-9a3e-55bf56a519b4}</CycleUpdate>
+    <PostCycleUpdate>{995dd7be-2844-4d0a-a01d-7ddc3ebf03af}</PostCycleUpdate>
+  </Task>
+</TcPlcObject>

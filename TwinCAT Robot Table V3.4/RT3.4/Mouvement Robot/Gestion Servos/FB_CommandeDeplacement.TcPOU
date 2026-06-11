@@ -1,0 +1,777 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_CommandeDeplacement" Id="{7bb26758-dce4-4204-a47a-c0a856e4ddca}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_CommandeDeplacement
+VAR_IN_OUT
+	stAxeMotDroite	: AXIS_REF;
+	stAxeMotGauche	: AXIS_REF;
+END_VAR
+VAR_INPUT
+	boAU		: BOOL;	//Arret d'urgence (0: Normal, 1: Unpower des moteur, va en case spécial
+	boPowerMot	: bool;	//Power les moteurs, 0: unpower les moteur, 1: power le moteurs
+	boRst		: BOOL;	//Reset du block (Le remet en état normal et effectue un reset sur les axes)
+	boStartDepl : BOOL;	//Démmare le déplacement demandé
+	boFastStop	: BOOL;	//Effectue un arret rapide sur les moteur (A activer en cas de détection balise par exemple, ne met pas le bloc en erreur)
+	
+	ieModeDepl	: INT;	//Définit de mode de déplacement
+	
+	lrPosXObj	: LREAL;	//Pos X objectif
+	lrPosYObj	: LREAL;	//Pos Y objectif
+	
+	boInverserAngle	: BOOL;	//En cas de deplacement absolut choisit l'angle le plus grand pour aller a l'objectif
+	boMarcheArriere	: BOOL;	//En cas de déplacement absolut effectue une marche arrière
+	
+	lrAngleObj	: LREAL;	//Angle a effectuer
+	lrDistObj	: LREAL;	//Distance a effectuer
+	
+	lrVitMax	: LREAL := 400;	//Vitesse max du robot [mm/s]
+	lrAccMax	: LREAL := 400;	//Accéleration max du robot [mm/s^2]
+	
+	lrAccStop	: lreal := 500;	//Definit l'accéleration lors d'un stop du robot (stop ou reset)
+	
+	lrEntraxeMot	: LREAL;	//Entraxe des roues motrices du robot (en [mm])
+	
+	lrPosActX : LREAL;
+	lrPosActY : LREAL;
+	lrPosActAngle : LREAL;
+	
+	iCoupleDroite	: LREAL;
+	iCoupleGauche	: LREAL;
+	iCoupleLim		: INT;	//Limite au dela de laquelle le moteur s'arrète
+END_VAR
+VAR_OUTPUT
+	boDeplActif	: BOOL;	//Est a true quand un déplacement et en cours (ou le bloc est actif)
+	boDeplDone	: BOOL;	//Est a true quand un déplacement est finis et le suivant pas encore commencé
+	boErreur	: BOOL;	//Est a true quand le bloc a subit un arret d'urgence, nessecite un reset
+	
+	boDeplRotation : BOOL;//A truequand une rotation est effectuée
+	boDeplAvant		: BOOL;	//A true quand le robot ce deplace en amrche avant
+	boDeplArriere	: BOOL;	//A true quand le robot ce deplace en marche arriere
+	boPowerOK : bool;
+END_VAR
+VAR
+	R_TRIG_Rst: R_TRIG;
+	R_TRIG_Str: R_TRIG;
+	R_TRIG_Stp: R_TRIG;
+	
+	Rs_MC_MoveRelative_DroiteDone : rs;
+	Rs_MC_MoveRelative_GaucheDone : rs;
+	
+	iCase	: INT;
+	
+	boStartMot	: BOOL;	//Va start les blocs moteurs
+	boStopMot	: BOOL;	//Va effectuer un stop sur les 2 axes
+	boRstMot 	: BOOL;
+	
+	lrDeplDroite : LREAL;
+	lrDeplGauche : LREAL;
+	
+	lrVitDroite : LREAL;
+	lrAccDroite : LREAL;
+	lrVitGauche : LREAL;
+	lrAccGauche : LREAL;
+	
+	lrPerimetreCourbe	: LREAL;
+	lrTempsCourbe		: LREAL;
+	tTempsCourbe		: TIME;
+	tonCourbe			: TON;
+
+	MC_MoveRelative_Droite : MC_MoveRelative;
+	MC_MoveRelative_Gauche: MC_MoveRelative;
+	MC_Power_Droite: MC_Power;
+	MC_Power_Gauche: MC_Power;
+	MC_Stop_Droite: MC_Stop;
+	MC_Stop_Gauche: MC_Stop;
+	MC_Reset_Droite: MC_Reset;
+	MC_Reset_Gauche: MC_Reset;
+	lrXObj: LREAL;
+	lrYObj: LREAL;
+	lrAngleEff: LREAL;
+	lrDistEff: LREAL;
+	lrPosX : LREAL;
+	lrPosY : LREAL;
+	lrPosAngle : lreal;
+	lrdX: LREAL;
+	lrdY: LREAL;
+	lrDistDepl: LREAL;
+	lrAngOb: LREAL;
+	MC_MoveVelocity_Droite: MC_MoveVelocity;
+	MC_MoveVelocity_Gauche: MC_MoveVelocity;
+	boStartVeloDroite : BOOL;
+	boStartVeloGauche : BOOL;
+	DirMoveVelo	: MC_Direction;
+	boStopMotDroite: BOOL;
+	boStopMotGauche: BOOL;
+	
+	
+END_VAR
+
+// Mes Variables 
+
+VAR 
+Qx_HoamingFait : BOOL;  // Quand Torque des 2 bon	
+R_TRIG_Homing: R_TRIG; // Moi
+
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//---------------------------------------------------------------------------------------------
+//	Auteur	: Ferrara Justin, base de Loïc Nicoud (RobotCPNV_2020)
+//	Date	: 10.10.2021
+//
+//	Gère les déplacement du robot, peut fonctionner en déplacement absolu (va a une coordonée),
+//	ou relatif (effectue un angle, puis une distance) ou en couple
+//	Déplacement absolu en fonction de la position zero sur la table (coin côté tour de la caméra, comme présenté dans le régelment 2021)
+//
+//---------------------------------------------------------------------------------------------
+
+R_TRIG_Rst( Clk := boRst );
+R_TRIG_Str( Clk := boStartDepl);
+R_TRIG_Stp( Clk := boFastStop);
+R_TRIG_Homing ( Clk := boFastStop);
+
+tonCourbe(PT:= tTempsCourbe);
+
+Rs_MC_MoveRelative_DroiteDone(SET:= MC_MoveRelative_Droite.Done, RESET1:= MC_MoveRelative_Droite.Execute, Q1=> );
+Rs_MC_MoveRelative_GaucheDone(SET:= MC_MoveRelative_Gauche.Done, RESET1:= MC_MoveRelative_Gauche.Execute, Q1=> );
+
+//Gestion arret d'urgence
+//Coupe les variables des bloc moteur, va se mettre en case -1
+IF boAU THEN
+	iCase := -1;
+	boErreur := TRUE;
+END_IF
+
+//Gestion reset
+//Remet a zéro les variables des bloc moteur, effectue un stop sur les axes, puis un reset une fois le stop fini ou en erreur
+IF R_TRIG_Rst.Q AND NOT boAU THEN
+	iCase := 10;
+END_IF
+
+//Gestion fast stop
+IF R_TRIG_Stp.Q AND NOT boAU THEN
+	icase := 50;
+END_IF
+
+//Case général de la gestion des moteurs
+CASE iCase OF
+	
+	-1	:	//étape arret d'urgence (Reset obligé pour en sortir)
+		boStartMot := FALSE;
+		boStopMotDroite := FALSE;
+		boStopMotGauche := FALSE;
+		boRstMot := FALSE;
+		boStartVeloGauche := FALSE;
+		boStartVeloDroite := FALSE;
+		
+		boDeplRotation := FALSE;
+		boDeplAvant := FALSE;
+		boDeplArriere := FALSE;		
+		
+		boDeplActif := FALSE;
+		boDeplDone := FALSE;
+		boErreur := TRUE;
+
+	0	:	//étape initiale, commence les déplacement une fois un front montant sur boStartDepl
+		IF R_TRIG_Str.Q THEN
+			IF ieModeDepl = eModeAbs THEN	//Mode de déplacement absolu
+				icase := 100;
+				boDeplActif := TRUE;
+				boDeplDone := FALSE;
+				
+				lrXObj := lrPosXObj;
+				lrYObj := lrPosYObj;
+				
+				lrPosX := lrPosActX;
+				lrPosY := lrPosActY;
+				lrPosAngle := lrPosActAngle;
+				
+				lrVitDroite := lrVitMax;
+				lrVitGauche := lrVitMax;
+				
+				lrAccDroite := lrAccMax;
+				lrAccGauche := lrAccMax;
+				
+			ELSIF ieModeDepl = eModeRel THEN	//Mode de déplacmeent relatif
+				icase := 200;
+				boDeplActif := TRUE;
+				boDeplDone := FALSE;
+				
+				lrAngleEff := lrAngleObj;
+				lrDistEff := lrDistObj;
+				
+				lrVitDroite := lrVitMax;
+				lrVitGauche := lrVitMax;
+				
+				lrAccDroite := lrAccMax;
+				lrAccGauche := lrAccMax;
+				
+			ELSIF ieModeDepl = eModeCp THEN		//Mode de déplacement en butée avec couple
+				icase := 400;
+				boDeplActif := TRUE;
+				boDeplDone := FALSE;
+				
+				lrVitDroite := lrVitMax;
+				lrVitGauche := lrVitMax;
+				
+				lrAccDroite := lrAccMax;
+				lrAccGauche := lrAccMax;
+				
+			ELSIF ieModeDepl = eModeCourbe THEN	//Mode de déplacement en courbe
+				icase := 500;
+				boDeplActif := TRUE;
+				boDeplDone := FALSE;
+				
+				lrPerimetreCourbe := 2 * PI * lrDistObj * lrAngleObj / 360;
+				lrTempsCourbe := lrPerimetreCourbe / lrVitMax;
+				tTempsCourbe := LREAL_TO_TIME(lrTempsCourbe * 1000);
+				
+				lrDeplDroite := 2 * PI * (lrDistObj + lrEntraxeMot / 2) * lrAngleObj / 360;
+				lrDeplGauche := 2 * PI * (lrDistObj - lrEntraxeMot / 2) * lrAngleObj / 360;
+				
+				IF boInverserAngle THEN
+					lrDeplDroite := 2 * PI * (lrDistObj - lrEntraxeMot / 2) * lrAngleObj / 360;
+					lrDeplGauche := 2 * PI * (lrDistObj + lrEntraxeMot / 2) * lrAngleObj / 360;
+				END_IF
+				
+				lrVitDroite := lrDeplDroite / lrTempsCourbe;
+				lrVitGauche := lrDeplGauche / lrTempsCourbe;
+				
+				lrAccDroite := lrVitDroite / lrTempsCourbe;
+				lrAccGauche := lrVitGauche / lrTempsCourbe;
+		
+			END_IF
+		END_IF
+		
+	//------------------------------------------------------------------------------------------------------------
+	10	:	//Case de début d'un reset
+		boDeplActif := TRUE;
+		boDeplDone := FALSE;
+		boErreur := FALSE;
+		
+		boDeplRotation := FALSE;
+		boDeplAvant := FALSE;
+		boDeplArriere := FALSE;	
+		
+		boStartMot := FALSE;
+		boStopMotDroite := FALSE;
+		boStopMotGauche := FALSE;
+		
+		boRstMot := TRUE;
+		
+		iCase := 11;
+		
+	11	:	//Attente reset mot done ou en erreur
+		IF MC_Reset_Droite.Error OR MC_Reset_Gauche.Error THEN	//Erreur au reset
+			boErreur := TRUE;
+			boDeplActif := FALSE;
+			boDeplDone := TRUE;
+			boRstMot := FALSE;
+			
+			iCase := -1;	//Va en case -1, nessecite un nouveau reset
+			
+		ELSIF MC_Reset_Droite.Done AND MC_Reset_Gauche.Done THEN
+			boDeplActif := FALSE;
+			boDeplDone := TRUE;
+			boRstMot := FALSE;
+			
+			iCase := 0;	//Va en 0, tout normal, attente déplacement
+			
+		END_IF
+		
+	//---------------------------------------------------------------------------------------------------------------
+	50	:	//Stop moteur
+		boDeplActif := TRUE;
+		boDeplDone := FALSE;
+		
+		boStartMot := FALSE;
+		boStartVeloGauche := FALSE;
+		boStartVeloDroite := FALSE;
+		boStopMotDroite := TRUE;
+		boStopMotGauche := TRUE;
+		
+		iCase := 51;
+		
+	51	:	//Attente stop done
+		IF MC_Stop_Droite.Error OR MC_Stop_Gauche.Error THEN	//Erreur sur un axe moteur
+			boErreur := TRUE;
+			boDeplActif := FALSE;
+			boDeplDone := FALSE;
+			
+			boStopMotDroite := FALSE;
+			boStopMotGauche := FALSE;
+			
+			iCase := -1;	//Va en case -1, nessecite un reset	
+			
+		ELSIF MC_Stop_Droite.Done AND MC_Stop_Gauche.Done THEN
+			boDeplActif := FALSE;
+			boDeplDone := TRUE;
+			
+			boDeplRotation := FALSE;
+			boDeplAvant := FALSE;
+			boDeplArriere := FALSE;	
+			
+			boStopMotDroite := FALSE;
+			boStopMotGauche := FALSE;
+			
+			iCase := 0;	//Va en 0, tout normal, attente nouveau déplacement
+		
+		END_IF
+		
+	//----------------------------------------------------------------------------------------------------------------
+	100	:	//Calcul angle et distance a effectuer pour deplacement absolut
+		//Calcul distance
+		lrdX := lrXObj - lrPosX;
+		lrdY := lrYObj - lrPosY;
+	
+		lrDistDepl := SQRT( lrdX*lrdX + lrdY*lrdY );
+		
+		//Calcul Angle en fonction de alpha 0
+		IF lrdY = 0 THEN
+			IF lrdX > 0 THEN
+				lrAngOb := 90;
+				
+			ELSE
+				lrAngOb := 270;
+			
+			END_IF
+		ELSIF lrdX = 0 THEN
+			IF lrdY < 0 THEN
+				lrAngOb := 180;
+				
+			ELSE
+				lrAngOb := 0;
+				
+			END_IF				
+		ELSE
+			lrAngOb := ( ATAN ( lrdX / lrdY ) ) * ( 180 / PI );
+	
+			IF ( lrdX < 0 ) AND ( lrdY > 0 ) THEN	//1
+				lrAngOb := 360 - ABS(lrAngOb);
+				
+			ELSIF ( lrdX > 0 ) AND ( lrdY < 0 ) THEN	//3
+				lrAngOb := 180 - ABS(lrAngOb);
+				
+			ELSIF ( lrdX < 0 ) AND ( lrdY < 0 ) THEN	//4
+				lrAngOb := 180+ ABS(lrAngOb);
+			
+			ELSIF ( lrdX > 0 ) AND ( lrdY > 0 ) THEN	//2
+				lrAngOb := ABS(lrAngOb) ;
+			
+			END_IF
+		END_IF
+		
+		lrAngOb := lrAngOb - lrPosAngle;
+		
+		//Calcul de l'angle a effectuer plus rapide
+		IF ABS ( lrAngOb ) > 180 THEN
+			IF lrAngOb < 0 THEN
+				lrAngOb := lrAngOb + 360;
+				
+			ELSE
+				lrAngOb := - ( 360 - lrAngOb );
+				
+			END_IF
+		END_IF
+		
+		//Check marche arriere
+		IF boMarcheArriere THEN
+			lrDistDepl := - lrDistDepl;
+			lrAngOb := lrAngOb - 180;
+			
+			IF ABS ( lrAngOb ) > 180 THEN
+				IF lrAngOb < 0 THEN
+					lrAngOb := lrAngOb + 360;
+				
+				ELSE
+					lrAngOb := - ( 360 - lrAngOb );
+				
+				END_IF
+			END_IF
+		END_IF
+		
+		//Check inversion rotation
+		IF boInverserAngle THEN
+			IF lrAngOb > 0 THEN
+				lrAngOb := lrAngOb - 360;
+				
+			ELSE
+				lrAngOb := lrAngOb + 360;
+			
+			END_IF
+		END_IF
+		
+		//Ecriture des angles et distance a effectuer
+		lrAngleEff := lrAngOb;
+		lrDistEff := lrDistDepl;
+		
+		iCase := 200;
+		
+	//-----------------------------------------------------------------------------------------------------------
+	200 :	//Distance et angle a effectuer connus, faire déplacment, angle d'abord
+		IF lrAngleEff <> 0 THEN
+			//angle a effectuer, calcul depl roues
+			lrAngleEff := lrAngleEff;
+			//Calcul avance des moteur
+			lrDeplGauche := ((lrEntraxeMot / 2 ) * ( lrAngleEff * PI / 180 ));
+			lrDeplDroite := - lrDeplGauche;
+			
+			//Start moteur
+			boDeplRotation := TRUE;
+			boDeplAvant := FALSE;
+			boDeplArriere := FALSE;	
+			
+			boStartMot := TRUE;
+			iCase := 201;
+			
+		ELSE //Pas dangle a effectuer, go distance
+			iCase := 250;	
+		
+		END_IF
+	
+	201	:	//Attende deplacement lancé	
+		IF MC_MoveRelative_Droite.Error OR MC_MoveRelative_Gauche.Error THEN	//Erreur
+			iCase := -1;
+
+		ELSIF MC_MoveRelative_Droite.Busy AND MC_MoveRelative_Gauche.Busy THEN	//Move demarré
+			boStartMot := FALSE;	
+			iCase := 202;
+		
+		END_IF
+		
+	202	:	//Attente deplacement finit
+		IF MC_MoveRelative_Droite.Error OR MC_MoveRelative_Gauche.Error THEN	//Erreur
+			iCase := -1;
+				
+		ELSIF Rs_MC_MoveRelative_DroiteDone.Q1 AND Rs_MC_MoveRelative_GaucheDone.Q1 THEN		//Depl finit
+			iCase := 250;	//Angle finit, faire distance
+			boDeplRotation := FALSE;
+			boDeplAvant := FALSE;
+			boDeplArriere := FALSE;	
+			
+		END_IF
+		
+	250	:	//Deplacement distance
+		IF lrDistEff <> 0 THEN
+			lrDeplDroite := lrDistEff;
+			lrDeplGauche := lrDistEff;
+			
+			//Start moteur
+			boDeplRotation := FALSE;
+			IF lrDistEff > 0 THEN
+				boDeplAvant := TRUE;
+				boDeplArriere := FALSE;
+			ELSE
+				boDeplAvant := FALSE;
+				boDeplArriere := TRUE;
+			END_IF
+		
+			boStartMot := TRUE;
+			iCase := 251;	
+			
+		ELSE	//Pas de distacne a effectuer, go finir deplacement
+			iCase := 300;
+			
+		END_IF
+		
+	251	:	//Attende deplacement lancé	
+		IF MC_MoveRelative_Droite.Error OR MC_MoveRelative_Gauche.Error THEN	//Erreur
+			iCase := -1;
+
+		ELSIF MC_MoveRelative_Droite.Busy AND MC_MoveRelative_Gauche.Busy THEN	//Move demarré
+			boStartMot := FALSE;	
+			iCase := 252;
+		
+		END_IF
+		
+	252	:	//Attente deplacement finit
+		IF MC_MoveRelative_Droite.Error OR MC_MoveRelative_Gauche.Error THEN	//Erreur
+			iCase := -1;
+				
+		ELSIF Rs_MC_MoveRelative_DroiteDone.Q1 AND Rs_MC_MoveRelative_GaucheDone.Q1 THEN		//Depl finit
+			iCase := 300;	//distance finit, go finir depl
+			boDeplRotation := FALSE;
+			boDeplAvant := FALSE;
+			boDeplArriere := FALSE;	
+			
+		END_IF
+		
+	300	:	//Finir le deplacmenet, remettre bloc dans état initial
+		boDeplActif := FALSE;
+		boDeplDone := TRUE;
+		
+		iCase := 0;
+		
+		
+	//--------------------------------------------------------------------------------------------
+	400:	//Mode butée - couple
+		//Activer move velocity
+		boDeplRotation := FALSE;
+		IF boMarcheArriere THEN
+			DirMoveVelo := MC_Negative_Direction;
+			
+			boDeplAvant := FALSE;
+			boDeplArriere := TRUE;	
+			
+		ELSE
+			DirMoveVelo := MC_Positive_Direction;
+			
+			boDeplAvant := TRUE;
+			boDeplArriere := FALSE;	
+			
+		END_IF
+		
+		boStartVeloGauche := TRUE;
+		boStartVeloDroite := TRUE;
+		
+		iCase := 401;
+		
+	401:	//Stop Mot une fois couple atteind
+		IF (ABS( iCoupleDroite) >= iCoupleLim ) OR MC_MoveVelocity_Droite.Error THEN
+			boStartVeloDroite := FALSE;
+			boStopMotDroite := TRUE;
+
+		END_IF
+		
+		IF (ABS( iCoupleGauche) >= iCoupleLim) OR MC_MoveVelocity_Gauche.Error THEN
+			boStartVeloGauche := FALSE;
+			boStopMotGauche := TRUE;
+		
+		END_IF
+		
+		IF boStopMotDroite AND boStopMotGauche THEN
+			iCase := 402;	
+		
+		END_IF
+		
+	402: 	//Attend les deux stop done
+		IF MC_Stop_Droite.Error OR MC_Stop_Gauche.Error THEN	//Erreur sur un axe moteur - effectuer un reset directement
+			
+			boStopMotDroite := FALSE;
+			boStopMotGauche := FALSE;
+			
+			iCase := 10;	//Va en case 10, fait un reset direct
+			
+		ELSIF MC_Stop_Droite.Done AND MC_Stop_Gauche.Done THEN
+			//boDeplActif := FALSE;
+			//boDeplDone := TRUE;
+			
+			boStopMotDroite := FALSE;
+			boStopMotGauche := FALSE;
+			
+			boDeplRotation := FALSE;
+			boDeplAvant := FALSE;
+			boDeplArriere := FALSE;	
+			
+			iCase := 10;	//Va en 0, tout normal, attente nouveau déplacement
+		
+		END_IF
+		
+	//--------------------------------------------------------------------------------------------
+	500:	//Mode courbe
+		//Active move velocity
+		boDeplRotation := FALSE;
+		IF boMarcheArriere THEN
+			DirMoveVelo := MC_Negative_Direction;
+			
+			boDeplAvant := FALSE;
+			boDeplArriere := TRUE;	
+			
+		ELSE
+			DirMoveVelo := MC_Positive_Direction;
+			
+			boDeplAvant := TRUE;
+			boDeplArriere := FALSE;	
+			
+		END_IF
+		
+		boStartVeloGauche := TRUE;
+		boStartVeloDroite := TRUE;
+		
+		tonCourbe.IN := 1;
+		
+		iCase := 501;
+		
+	501:	//Attend la fin de la ton
+		IF tonCourbe.Q THEN
+			tonCourbe.IN := 0;
+			boStartVeloGauche := FALSE;
+			boStartVeloDroite := FALSE;
+			boStopMotDroite := TRUE;
+			boStopMotGauche := TRUE;
+			iCase := 502;
+		END_IF
+		
+	502:	//Attend les deux stop done
+		IF MC_Stop_Droite.Error OR MC_Stop_Gauche.Error THEN	//Erreur sur un axe moteur - effectuer un reset directement
+			
+			boStopMotDroite := FALSE;
+			boStopMotGauche := FALSE;
+			
+			boDeplDone := TRUE;
+			
+			iCase := 10;	//Va en case 10, fait un reset direct
+			
+		ELSIF MC_Stop_Droite.Done AND MC_Stop_Gauche.Done THEN
+			//boDeplActif := FALSE;
+			//boDeplDone := TRUE;
+			
+			boStopMotDroite := FALSE;
+			boStopMotGauche := FALSE;
+			
+			boDeplRotation := FALSE;
+			boDeplAvant := FALSE;
+			boDeplArriere := FALSE;	
+			
+			boDeplDone := TRUE;
+			
+			iCase := 10;	//Va en 0, tout normal, attente nouveau déplacement
+		
+		END_IF
+END_CASE
+
+boPowerOK := MC_Power_Droite.Status AND MC_Power_Gauche.Status;
+
+//Bloc Moteur
+MC_Power_Droite(
+	Axis:= stAxeMotDroite, 
+	Enable:= (NOT boAU) AND boPowerMot, 
+	Enable_Positive:= TRUE, 
+	Enable_Negative:= TRUE, 
+	Override:= 100, 
+	BufferMode:= , 
+	Options:= , 
+	Status=> , 
+	Busy=> , 
+	Active=> , 
+	Error=> , 
+	ErrorID=> );
+	
+MC_Power_Gauche(
+	Axis:= stAxeMotGauche, 
+	Enable:= (NOT boAU) AND boPowerMot, 
+	Enable_Positive:= TRUE, 
+	Enable_Negative:= TRUE, 
+	Override:= 100, 
+	BufferMode:= , 
+	Options:= , 
+	Status=> , 
+	Busy=> , 
+	Active=> , 
+	Error=> , 
+	ErrorID=> );
+
+MC_MoveRelative_Droite(
+	Axis:= stAxeMotDroite, 
+	Execute:= boStartMot, 
+	Distance:= lrDeplDroite, 
+	Velocity:= lrVitDroite, 
+	Acceleration:= lrAccDroite, 
+	Deceleration:= lrAccDroite, 
+	Jerk:= 15000, 
+	BufferMode:= , 
+	Options:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+	
+MC_MoveRelative_Gauche(
+	Axis:= stAxeMotGauche, 
+	Execute:= boStartMot, 
+	Distance:= lrDeplGauche, 
+	Velocity:= lrVitGauche, 
+	Acceleration:= lrAccGauche, 
+	Deceleration:= lrAccGauche, 
+	Jerk:= 15000, 
+	BufferMode:= , 
+	Options:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+	
+MC_Stop_Droite(
+	Axis:= stAxeMotDroite, 
+	Execute:= boStopMotDroite, 
+	Deceleration:= lrAccStop, 
+	Jerk:= 15000, 
+	Options:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+	
+MC_Stop_Gauche(
+	Axis:= stAxeMotGauche, 
+	Execute:= boStopMotGauche, 
+	Deceleration:= lrAccStop, 
+	Jerk:= 15000, 
+	Options:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+	
+MC_Reset_Droite(
+	Axis:= stAxeMotDroite, 
+	Execute:= boRstMot, 
+	Done=> , 
+	Busy=> , 
+	Error=> , 
+	ErrorID=> );
+	
+MC_Reset_Gauche(
+	Axis:= stAxeMotGauche, 
+	Execute:= boRstMot, 
+	Done=> , 
+	Busy=> , 
+	Error=> , 
+	ErrorID=> );
+	
+MC_MoveVelocity_Droite(
+	Axis:= stAxeMotDroite, 
+	Execute:= boStartVeloDroite, 
+	Velocity:= lrVitDroite, 
+	Acceleration:= lrAccDroite, 
+	Deceleration:= lrAccDroite, 
+	Jerk:= 15000, 
+	Direction:= DirMoveVelo, 
+	BufferMode:= , 
+	Options:= , 
+	InVelocity=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+	
+MC_MoveVelocity_Gauche(
+	Axis:= stAxeMotGauche, 
+	Execute:= boStartVeloGauche, 
+	Velocity:= lrVitGauche, 
+	Acceleration:= lrAccGauche, 
+	Deceleration:= lrAccGauche, 
+	Jerk:= 15000, 
+	Direction:= DirMoveVelo, 
+	BufferMode:= , 
+	Options:= , 
+	InVelocity=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+	
+	]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

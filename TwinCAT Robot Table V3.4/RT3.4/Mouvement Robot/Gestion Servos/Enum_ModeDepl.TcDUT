@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="Enum_ModeDepl" Id="{e2db0b58-8a34-4f05-be2c-91aa19972248}">
+    <Declaration><![CDATA[TYPE Enum_ModeDepl :
+(
+	eModeAbs,	//Mode de délpaceemnt absolu, (Va au coordénées données) // 0
+	eModeRel,	//Mode de déplacement relatif (Effectue un angle, puis une distance) // 1
+	eModeCp,	//Mode de déplacement couple (Avance ou recule avec les 2 moteur a vitesse constante jusqu'a ce que le couple sur les 2 moteur dépasse une limite) // 2
+	eModeCourbe	//Mode de déplacement en courbe // 3
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

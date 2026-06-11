@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_Dynamixel" Id="{685cf8db-e93a-4a69-a547-0c8dfe690221}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+Ix_Haut :BOOL ;  // Position 2
+Ix_Millieu :BOOL ; // Position 1
+IX_Bas :BOOL ;  // Position 0
+Ix_Stop : BOOL ;   
+Ix_Hoaming : BOOL ;  
+Ix_AUHMI :BOOL ;	
+Mx_Pret :BOOL ;
+Mx_Distance :DINT ;
+Qx_LampeHoamingPasFait:BOOL;
+Mx_LampeHoamingPasFait:BOOL;
+Qx_LampeHoamingFait:BOOL ;
+Qx_LampeAU:BOOL ;
+Qx_LampeStat : BOOL ;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

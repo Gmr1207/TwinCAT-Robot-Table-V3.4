@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Hoaming_Test" Id="{6332f4d1-624c-4cac-b17f-43f7310b530e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Hoaming_Test
+VAR_INPUT
+Ix_Hoaming : BOOL ;	
+Ix_Test :BOOL ;
+END_VAR
+VAR_OUTPUT
+
+END_VAR
+VAR
+Step : INT ;	
+MC_SetPosition : MC_SetPosition ;	
+MC_SetPosition1: MC_SetPosition;
+	MC_SetPosition2: MC_SetPosition;
+	MC_SetPosition3: MC_SetPosition;
+	MC_SetPosition4: MC_SetPosition;
+(*Mx_M1 :BOOL ;
+Mx_M2 :BOOL ;
+Mx_M3 :BOOL ;
+Mx_M4 :BOOL ; *)
+
+	I_ServoExt: Tc2_MC2.AXIS_REF;
+	MC_Gauche: MC_MoveRelative;
+	MC_Droite: MC_MoveRelative;
+	
+	MC_PGauche: MC_Power;
+	MC_PowerD: MC_Power;
+	MC_ArriereDroite: MC_MoveVelocity;
+	MC_ArriereGauche: MC_MoveVelocity;
+END_VAR
+VAR_IN_OUT 
+I_Servo_1D	: AXIS_REF ;
+I_Servo_2G	: AXIS_REF ;
+I_ServoExt1 : AXIS_REF ;
+I_ServoExt2 : AXIS_REF ;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(* 
+
+CASE Step OF
+0: 
+
+    MC_SetPosition1(Axis := I_Servo_1D, Execute := FALSE);
+	MC_SetPosition2(Axis := I_Servo_2G, Execute := FALSE);
+	MC_SetPosition3(Axis := I_ServoExt1, Execute := FALSE);
+	MC_SetPosition4(Axis := I_ServoExt2, Execute := FALSE);
+
+IF Ix_Hoaming THEN 
+	Step := 1 ;
+END_IF
+
+1:
+
+ MC_ArriereDroite(
+	Axis:= I_Servo_1D , 
+	Execute:= , 
+	Velocity:= , 
+	Acceleration:= , 
+	Deceleration:= , 
+	Jerk:= , 
+	Direction:= , 
+	BufferMode:= , 
+	Options:= , 
+	InVelocity=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+	
+	MC_ArriereGauche(
+	Axis:= I_Servo_2G , 
+	Execute:= , 
+	Velocity:= , 
+	Acceleration:= , 
+	Deceleration:= , 
+	Jerk:= , 
+	Direction:= , 
+	BufferMode:= , 
+	Options:= , 
+	InVelocity=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+
+   
+
+
+10: // Servo 1
+    MC_SetPosition1(
+        Axis := I_Servo_1D,
+        Position := 90,
+        Mode := ,
+        Options := ,
+        Execute := TRUE
+    );
+    IF MC_SetPosition1.Done THEN
+	   
+        Step := 20;
+    END_IF
+
+20: // Servo 2
+    MC_SetPosition2(
+        Axis := I_Servo_2G,
+        Position := 90,
+        Mode := ,
+        Options := ,
+        Execute := TRUE
+    );
+    IF MC_SetPosition2.Done THEN
+		
+        Step := 30;
+    END_IF
+
+30: // Encoder 1
+    MC_SetPosition3(
+        Axis := I_ServoExt1,
+        Position := 90,
+        Mode := ,
+        Options := ,
+        Execute := TRUE
+    );
+    IF MC_SetPosition3.Done THEN
+	   
+        Step := 40;
+    END_IF
+
+40: // Encoder 2
+    MC_SetPosition4(
+        Axis := I_ServoExt2,
+        Position := 90,
+        Mode := ,
+        Options := ,
+        Execute := TRUE
+	);
+    IF MC_SetPosition4.Done THEN
+		
+        Step := 0;
+	END_IF
+
+  // Test pour Scalling Factor
+5: 
+
+
+
+   MC_Gauche(
+	Axis:= I_Servo_1 , 
+	Execute:= Ix_Test, 
+	Distance:= 1200 , 
+	Velocity:= 200 , 
+	Acceleration:=  , 
+	Deceleration:= , 
+	Jerk:= , 
+	BufferMode:= , 
+	Options:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+
+MC_Droite(
+	Axis:= I_Servo_2 , 
+	Execute:= Ix_Test , 
+	Distance:= 1200 , 
+	Velocity:= 200 , 
+	Acceleration:= , 
+	Deceleration:= , 
+	Jerk:= , 
+	BufferMode:= , 
+	Options:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+
+IF MC_Gauche.Done AND MC_Droite.Done  THEN
+		
+        Step := 0;
+
+
+
+END_IF  *)
+	
+// END_CASE  
+
+
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

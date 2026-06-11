@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Calcul_Position_V4_3" Id="{1aef488c-c135-4329-b8df-e94217221081}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Calcul_Position_V4_3
+
+VAR_INPUT
+
+	lrPosCodeurDroite	: LREAL;
+	lrPosCodeurGauche	: LREAL;
+	lrEntraxeCodeur		: LREAL;
+
+	boSetPosInitiale	: BOOL;
+	boSetPosInitiale_Test	: BOOL;
+	lrPosInitialeX		: LREAL;
+	lrPosInitialeY		: LREAL;
+	lrPosInitialeAngle	: LREAL;	// en [°], le 0° vers Y+, sens horaire
+
+END_VAR
+VAR_OUTPUT
+	
+	lrPosActuelleX		: LREAL;
+	lrPosActuelleY		: LREAL;
+	lrPosActuelleAngle	: LREAL;
+
+END_VAR
+VAR
+	
+	lrPosCodeurDroiteDernierCycle	: LREAL;
+	lrPosCodeurGaucheDernierCycle	: LREAL;
+	lrPosActuelleAngleRadian		: LREAL;	
+
+	lrDeltaCodeurDroite		: LREAL;
+	lrDeltaCodeurGauche		: LREAL;
+	
+	lrDeltaDistance		: LREAL;
+	lrDeltaAngle		: LREAL;
+	
+	lrOLDPosActuelleX		: LREAL;
+	lrOLDPosActuelleY		: LREAL;
+	
+END_VAR
+VAR CONSTANT
+	
+	lrValeurPi	: LREAL := 3.1415926535897932384626433832795;
+
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[lrOLDPosActuelleX  := lrPosActuelleX;
+lrOLDPosActuelleY  := lrPosActuelleY;
+
+//Gestion set pos initiale
+
+IF boSetPosInitiale OR boSetPosInitiale_Test  THEN
+	
+	lrPosActuelleX := lrPosInitialeX;
+	lrPosActuelleY := lrPosInitialeY;
+	lrPosActuelleAngle := lrPosInitialeAngle;
+	lrPosActuelleAngleRadian := lrPosInitialeAngle * ( lrValeurPi / 180 );
+	
+	lrPosCodeurDroiteDernierCycle := lrPosCodeurDroite;
+	lrPosCodeurGaucheDernierCycle := lrPosCodeurGauche;
+
+END_IF
+
+//Calcul des deltas codeurs
+
+lrDeltaCodeurDroite := lrPosCodeurDroite - lrPosCodeurDroiteDernierCycle;
+lrDeltaCodeurGauche := lrPosCodeurGauche - lrPosCodeurGaucheDernierCycle;
+
+//Calcul distance moyenne et angle
+
+lrDeltaDistance	:= ( lrDeltaCodeurDroite + lrDeltaCodeurGauche ) / 2;
+lrDeltaAngle	:= ATAN ( ( lrDeltaCodeurGauche - lrDeltaCodeurDroite ) / lrEntraxeCodeur );
+
+//Calcul pos du robot
+
+lrPosActuelleX := lrPosActuelleX + ( lrDeltaDistance * SIN ( lrPosActuelleAngleRadian ) );
+lrPosActuelleY := lrPosActuelleY + ( lrDeltaDistance * COS ( lrPosActuelleAngleRadian*-1 ) );
+
+lrPosActuelleAngleRadian := lrPosActuelleAngleRadian + lrDeltaAngle;
+
+IF lrPosActuelleAngleRadian < 0 THEN
+	
+	lrPosActuelleAngleRadian := lrPosActuelleAngleRadian + ( 2 * lrValeurPi );
+	
+ELSIF lrPosActuelleAngleRadian >= ( 2 * lrValeurPi ) THEN
+	
+	lrPosActuelleAngleRadian := lrPosActuelleAngleRadian - ( 2 * lrValeurPi );
+
+END_IF
+
+lrPosActuelleAngle := lrPosActuelleAngleRadian * ( 180 / lrValeurPi );
+
+lrPosCodeurDroiteDernierCycle := lrPosCodeurDroite;
+lrPosCodeurGaucheDernierCycle := lrPosCodeurGauche;]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,234 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Hoaming" Id="{da993c32-72f7-4bfa-a3e6-079d56353e92}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Hoaming
+VAR_INPUT
+Ix_Hoaming : BOOL ;
+IX_Set_Pos : BOOL ;
+END_VAR
+VAR_OUTPUT
+Mx_0: BOOL;	
+Ix_Hoaming_OUT : BOOL ;
+
+	Mx_SetPret: BOOL;
+END_VAR
+VAR
+Step : INT ;	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*IF Ix_Hoaming AND Step = 0 AND GVL_Servos.PowerMoteur THEN 
+	Mx_0 := TRUE ;
+	Step := 1;
+END_IF *)
+
+
+
+
+
+CASE Step OF
+
+0: Mx_SetPret := TRUE ;
+
+IF Ix_Hoaming AND Step = 0 AND GVL_Servos.PowerMoteur THEN 
+    GVL_Servos.ReglageVitesse := 50 ;
+    GVL_Servos.ReglageAcceleration := 50  ;
+    Mx_0 := TRUE ;
+	Step := 1;
+END_IF
+
+
+1:
+
+IF Mx_0  THEN 
+GVL_Servos.Modedeplacement := 2;	// Mode de Hoaming Couple
+GVL_Servos.BpMarcheArriere := TRUE ;
+GVL_Servos.BpDeplacement := TRUE ;
+Step := 10;
+END_IF
+
+10:
+IF GVL_Servos.QxDeplacementDone THEN 
+	GVL_Servos.Modedeplacement := 2;	// Mode de Hoaming Couple
+    GVL_Servos.BpMarcheArriere := FALSE ;
+    GVL_Servos.BpDeplacement := FALSE ;
+	Step := 20;
+END_IF
+
+20: IF Step = 20 THEN 
+    GVL_Servos.Modedeplacement := 1;	// Mode Relatif
+    GVL_Servos.ObjectifDistance := 100 ;
+    GVL_Servos.BpMarcheArriere := FALSE ;
+    GVL_Servos.BpDeplacement := TRUE ;
+	Step := 30;	
+
+
+
+END_IF
+
+30: IF GVL_Servos.QxDeplacementDone THEN  
+	GVL_Servos.Modedeplacement := 1;	// Relatif
+    GVL_Servos.ObjectifDistance := 0 ;
+    GVL_Servos.BpMarcheArriere := FALSE ;
+    GVL_Servos.BpDeplacement := FALSE ;
+	Step := 40;
+END_IF
+
+40: IF Step = 40 THEN 
+    GVL_Servos.Modedeplacement := 1;	// Mode Relatif
+    GVL_Servos.ObjectifDistance := 0 ;
+	GVL_Servos.ObjectifAngle := -90 ;
+    GVL_Servos.BpMarcheArriere := FALSE ;
+    GVL_Servos.BpDeplacement := TRUE ;
+	Step := 50;	
+	
+END_IF	
+	
+50: IF Step = 50 THEN 
+    GVL_Servos.Modedeplacement := 0;	// Reset Tout 
+    GVL_Servos.ObjectifDistance := 0 ;
+	GVL_Servos.ObjectifAngle := 0 ;
+    GVL_Servos.BpMarcheArriere := FALSE ;
+    GVL_Servos.BpDeplacement := FALSE ;
+	Step := 60;	
+	
+END_IF
+
+60: IF Step = 60 THEN 
+    GVL_Servos.Modedeplacement := 2;	// Mode Relatif
+    GVL_Servos.BpMarcheArriere := TRUE ;
+    GVL_Servos.BpDeplacement := TRUE ;
+	Step := 70;	
+
+END_IF 
+
+70:
+IF GVL_Servos.QxDeplacementDone THEN 
+	GVL_Servos.Modedeplacement := 0;	// Mode de Hoaming Couple
+    GVL_Servos.BpMarcheArriere := FALSE ;
+    GVL_Servos.BpDeplacement := FALSE ;
+	Step := 80;
+END_IF 
+
+80: IF Step = 80 THEN 
+    GVL_Servos.Modedeplacement := 2;	// Mode Relatif
+    GVL_Servos.ObjectifDistance := 0 ;
+    GVL_Servos.BpMarcheArriere := TRUE;
+    GVL_Servos.BpDeplacement := TRUE ;
+	Step := 85;	
+
+
+
+END_IF 
+
+85:
+IF GVL_Servos.QxDeplacementDone THEN 
+	GVL_Servos.Modedeplacement := 0;	// Mode de Hoaming Couple
+    GVL_Servos.BpMarcheArriere := FALSE ;
+    GVL_Servos.BpDeplacement := FALSE ;
+	Step := 90;
+END_IF 
+
+90: IF Step = 90 THEN  
+	GVL_Servos.Modedeplacement := 1;	// Relatif
+    GVL_Servos.ObjectifDistance := 80 ;
+    GVL_Servos.BpMarcheArriere := FALSE ;
+    GVL_Servos.BpDeplacement := FALSE ;
+	Step := 95;
+END_IF
+
+95:
+IF GVL_Servos.QxDeplacementDone THEN 
+	GVL_Servos.Modedeplacement := 0;	// Mode de Hoaming Couple
+    GVL_Servos.BpMarcheArriere := FALSE ;
+    GVL_Servos.BpDeplacement := FALSE ;
+	Step := 100;
+END_IF 
+
+100: IF Step = 100 THEN 
+    GVL_Servos.Modedeplacement := 1;	// Mode Relatif
+    GVL_Servos.ObjectifDistance := 80 ;
+    GVL_Servos.BpMarcheArriere := FALSE ;
+    GVL_Servos.BpDeplacement := TRUE ;
+	Step := 105;	
+	
+END_IF	
+
+105:
+IF GVL_Servos.QxDeplacementDone THEN 
+	GVL_Servos.Modedeplacement := 0;	// Mode de Hoaming Couple
+    GVL_Servos.BpMarcheArriere := FALSE ;
+    GVL_Servos.BpDeplacement := FALSE ;
+	Step := 110;
+END_IF 
+
+110: IF Step = 110 THEN 
+    GVL_Servos.Modedeplacement := 0;	// Mode Relatif
+    GVL_Servos.ObjectifDistance := 0 ;
+	GVL_Servos.ObjectifAngle := 90 ;
+    GVL_Servos.BpMarcheArriere := FALSE ;
+    GVL_Servos.BpDeplacement := FALSE ;
+	Step := 120;	
+	
+END_IF
+
+115:
+IF GVL_Servos.QxDeplacementDone THEN 
+	GVL_Servos.Modedeplacement := 0;	// Mode de Hoaming Couple
+    GVL_Servos.BpMarcheArriere := FALSE ;
+    GVL_Servos.BpDeplacement := FALSE ;
+	Step := 120;
+END_IF 
+
+120: IF Step = 120 THEN 
+    GVL_Servos.Modedeplacement := 1;	// Mode Relatif
+    GVL_Servos.ObjectifDistance := -42 ;
+    GVL_Servos.BpMarcheArriere := FALSE ;
+    GVL_Servos.BpDeplacement := TRUE ;
+	Step := 130;	
+
+
+
+END_IF
+
+130: IF GVL_Servos.QxDeplacementDone THEN     // fin de Hoaming
+	GVL_Servos.Modedeplacement := 1;	// Relatif
+    GVL_Servos.ObjectifDistance := 0 ;                
+    GVL_Servos.BpMarcheArriere := FALSE ;
+    GVL_Servos.BpDeplacement := FALSE ;
+	
+	Step := 135;
+END_IF
+
+135: Mx_SetPret := FALSE ;
+
+    IF IX_Set_Pos THEN 
+	Ix_Hoaming_OUT := TRUE ;
+	Step := 136;
+	
+END_IF
+
+136 : IF  Step = 136 AND Ix_Hoaming_OUT  THEN 
+    
+	Step := 140;
+    END_IF
+
+140:IF  Step = 140  THEN 
+
+    Mx_SetPret := TRUE ;
+    Ix_Hoaming_OUT := FALSE ;
+	GVL_Servos.ObjectifAngle := 0 ;
+	GVL_Servos.ReglageVitesse := 400 ;
+    GVL_Servos.ReglageAcceleration := 400  ;
+    Mx_0 := FALSE ;
+	Step := 0;
+    END_IF
+
+END_CASE
+
+IF IX_Set_Pos THEN 
+Step := 140 ;
+END_IF]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

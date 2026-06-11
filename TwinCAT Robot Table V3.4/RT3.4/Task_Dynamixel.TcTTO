@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Task Name="Task_Dynamixel" Id="{3efb89af-db78-4995-b567-cc251ac7441d}">
+    <!--CycleTime in micro seconds.-->
+    <CycleTime>1000</CycleTime>
+    <Priority>1</Priority>
+    <PouCall>
+      <Name>P_Dynamixel</Name>
+    </PouCall>
+    <TaskFBGuid>{79c2b47d-dadb-4515-b568-b536b06e0af2}</TaskFBGuid>
+    <Fb_init>{3c1d4e30-c337-4890-8576-11dfb8d3160b}</Fb_init>
+    <Fb_exit>{54f212ad-19ed-4522-9b4f-8536dba1b5b7}</Fb_exit>
+    <CycleUpdate>{f4bbbe19-00cc-459c-92da-728822441c3d}</CycleUpdate>
+    <PostCycleUpdate>{4f721e3b-7e00-4550-b3d4-c3d3ca22949e}</PostCycleUpdate>
+  </Task>
+</TcPlcObject>

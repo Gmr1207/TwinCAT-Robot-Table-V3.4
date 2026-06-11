@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_Turbine" Id="{944c96c3-b77b-4035-865f-f8fefe3df1e9}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+
+  //Entrees HMI
+
+BpStartMoteur_SoufleuseHMI : BOOL ;
+BpStopMoteur_SoufleuseHMI : BOOL ;
+SelecteurOnOff : BOOL ;
+OrdreTourEnSecondes : REAL ;
+   
+   //Sorties HMI
+LampeEnMouvement_SoufleuseHMI : BOOL ;
+LampeArret_SoufleuseHMI : BOOL ;
+LampeAtivationFaite_SoufleuseHMI : BOOL ;
+LampeReset_SoufleuseHMI : BOOL ;
+TourEnSecondes : LREAL ;
+
+// Sample Base de min 0.2-1s
+
+SampleBase_10 AT %Q* : INT ;	
+SampleBase_20 AT %Q* : INT ;
+SampleBase_30 AT %Q* : INT ;
+SampleBase_40 AT %Q* : INT ;
+SampleBase_50 AT %Q* : INT ;
+
+// Sample 1-2 s max
+
+SampleMoteur_Vit1 AT %Q* : INT ;	
+SampleMoteur_Vit2 AT %Q* : INT ;
+SampleMoteur_Vit3 AT %Q* : INT ;	
+SampleMoteur_Vit4 AT %Q* : INT ;
+SampleMoteur_Vit5 AT %Q* : INT ;
+
+
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_AU" Id="{7e4afcd9-1ffa-4017-9310-692af43528c4}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_AU
+VAR_INPUT
+Ix_nAU : BOOL ;	
+END_VAR
+VAR_OUTPUT
+Qx_AU :BOOL ;	
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF NOT Ix_nAU THEN
+(*GVL_Lidar.zoneSelectionee_GVL[36]:=0;
+GVL_Lidar.zoneSelectionee_GVL[1]:=0;
+GVL_Lidar.zoneSelectionee_GVL[2]:=0; *)
+Qx_AU :=1  ;
+
+ELSE
+
+Qx_AU :=0  ;		
+
+END_IF]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
