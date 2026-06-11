@@ -9,6 +9,7 @@ VAR_OUTPUT
 Qx_AU :BOOL ;	
 END_VAR
 VAR
+	test1: INT;
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -22,7 +23,8 @@ ELSE
 
 Qx_AU :=0  ;		
 
-END_IF]]></ST>
+END_IF
+test1 :=0;]]></ST>
     </Implementation>
   </POU>
 </TcPlcObject>

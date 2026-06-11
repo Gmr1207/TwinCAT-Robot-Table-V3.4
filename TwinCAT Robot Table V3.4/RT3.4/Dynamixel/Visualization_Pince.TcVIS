@@ -5,7 +5,7 @@
       <Data>
         <o xml:space="preserve" t="VisualObject">
           <n n="LastVisuLanguageModelEntry" />
-          <v n="UniqueIdGenerator">"235"</v>
+          <v n="UniqueIdGenerator">"238"</v>
           <o n="VisualElemList" t="VisualElemList">
             <l n="VisualElementList" t="VisualElemCollection" cet="GenericVisualElem">
               <o>
@@ -2422,7 +2422,7 @@
                     <o>
                       <v n="AssignExpr">""</v>
                       <n n="Assign" />
-                      <v n="Assign33">"Visualization_MAIN"</v>
+                      <v n="Assign33">"Visualization_Base"</v>
                       <v n="Type" t="ChangeVisuType">Assignment</v>
                     </o>
                   </a>
