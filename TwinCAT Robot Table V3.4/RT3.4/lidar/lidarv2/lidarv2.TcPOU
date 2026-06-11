@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="lidarv2" Id="{3dc90876-45f0-4aad-add8-20248c81ed73}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK lidarv2
+VAR_INPUT
+	lrPosActX : LREAL;
+	lrPosActY : LREAL;
+	lrPosActAngle : LREAL;
+	presenceTour :BOOL;
+	decalageXTour :LREAL;
+	decalageYTour :LREAL;
+	margeTour : INT;
+END_VAR
+VAR_OUTPUT
+	lrPosActAdvX : LREAL;
+	lrPosActAdvY : LREAL;
+	couleur :bool;
+END_VAR
+VAR
+	i: INT;
+	point : ARRAY[0..360] OF PointLidarV2;
+	pointDansTable : array [0..359] of int;
+	i1: INT;
+	unobstacle : BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[FOR i := 0 TO 360 DO
+	point[i].dist := decodage_lidar.aScan360[i].DistanceMm;
+	point[i].coY := (COS(i) * decodage_lidar.aScan360[i].DistanceMm) + lrPosActY;
+	point[i].coX := (COS(i) * decodage_lidar.aScan360[i].DistanceMm) + lrPosActX;
+END_FOR
+couleur :=0;
+IF presenceTour THEN      // si Presence tour externe
+FOR i := 85 TO 95 DO
+	IF point[i].dist <= (decalageXTour + lrPosActX + margeTour) THEN
+		couleur :=1;
+	END_IF
+END_FOR
+END_IF
+i1 :=0;
+FOR i := 0 TO 359 DO
+	IF point[i].coY > 2000 AND point[i].coX > 3000 AND point[i].coY > 1 AND point[i].coX > 1 THEN
+		point[i].dansTable :=0;
+		pointDansTable[i1] := 0;
+		ELSE
+			point[i].dansTable :=1;
+			pointDansTable[i1] := i;
+			i1 := i1 +1;
+	END_IF
+END_FOR
+FOR i := 1 TO i1 DO
+	IF point[i1-1].dist > point[i1].dist -10 AND point[i1-1].dist < point[i1].dist +10 THEN
+		unobstacle :=1;
+		ELSE
+			unobstacle :=0;
+	END_IF
+END_FOR
+IF unobstacle THEN
+	lrPosActAdvX := point[i1/2].coX ;
+	lrPosActAdvY := point[i1/2].coY ;
+END_IF
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

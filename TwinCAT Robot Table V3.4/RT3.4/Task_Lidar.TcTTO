@@ -4,6 +4,9 @@
     <!--CycleTime in micro seconds.-->
     <CycleTime>10000</CycleTime>
     <Priority>5</Priority>
+    <PouCall>
+      <Name>decodage_lidar</Name>
+    </PouCall>
     <TaskFBGuid>{12a5a981-7b5a-4dd2-a7a6-ffaf751ac584}</TaskFBGuid>
     <Fb_init>{a75b7271-ec30-4b6b-91d6-014767b58bb2}</Fb_init>
     <Fb_exit>{e9b19bdd-fc49-405b-9789-93432af41096}</Fb_exit>

@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_ScanPoint" Id="{aab9e19a-1cbf-4eb1-921b-68a829399e3a}">
+    <Declaration><![CDATA[TYPE ST_ScanPoint :
+STRUCT
+	DistanceMm : UINT;   // dernière distance connue pour cet angle
+    Intensity  : BYTE;   // intensité associée
+    AngleDeg   : REAL;   // angle approximatif
+    Valid      : BOOL;   // TRUE si au moins un point "correct" reçu
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

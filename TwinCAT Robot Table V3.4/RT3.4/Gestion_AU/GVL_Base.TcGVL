@@ -3,7 +3,8 @@
   <GVL Name="GVL_Base" Id="{7e5cd920-2c56-4f19-b86a-6eede2cf887b}">
     <Declaration><![CDATA[{attribute 'qualified_only'}
 VAR_GLOBAL
-Ix_nAU AT %I*: BOOL ;	
+Ix_nAU AT %I*: BOOL ;
+Ix_AU_Lidar : BOOL ;	
 	GetActPosition: INT;
 Qx_AU :BOOL ;
 END_VAR]]></Declaration>

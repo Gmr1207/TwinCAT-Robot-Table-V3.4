@@ -2203,13 +2203,21 @@ External Setpoint Generation:
 		</Motion>
 		<Plc>
 			<Project GUID="{69A561A3-A2A9-4B1A-8871-FBE5325B0915}" Name="RT3.4" PrjFilePath="RT3.4\RT3.4.plcproj" TmcFilePath="RT3.4\RT3.4.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{687A519F-503B-2915-880F-018BFCB7B861}" TmcPath="RT3.4\RT3.4.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{52B743B6-EEF6-FADB-CBD4-8BBC9199D506}" TmcPath="RT3.4\RT3.4.tmc">
 					<Name>RT3 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="2" ContextId="4" AreaNo="65">
 						<Name>PlcTask Outputs</Name>
 						<Var>
 							<Name>POU_Servo_Mouvement.FB_Hoaming_0.I_ServoExt.PlcToNc</Name>
+							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Cal_Pos.Id_CodeurextGauche1.PlcToNc</Name>
+							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Cal_Pos.Id_CodeurextDroite1.PlcToNc</Name>
 							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
 						<Var>
@@ -2254,14 +2262,6 @@ External Setpoint Generation:
 							<Name>GVL_Turbine.SampleMoteur_Vit5</Name>
 							<Type>INT</Type>
 						</Var>
-						<Var>
-							<Name>GVL_Cal_Pos.Id_CodeurextGauche1.PlcToNc</Name>
-							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Cal_Pos.Id_CodeurextDroite1.PlcToNc</Name>
-							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
-						</Var>
 					</Vars>
 					<Vars VarGrpType="1" ContextId="4" AreaNo="64">
 						<Name>PlcTask Inputs</Name>
@@ -2293,6 +2293,10 @@ External Setpoint Generation:
 						</Var>
 						<Var>
 							<Name>GVL_Base.Ix_nAU</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Base.Ix_AU_Lidar</Name>
 							<Type>BOOL</Type>
 						</Var>
 					</Vars>

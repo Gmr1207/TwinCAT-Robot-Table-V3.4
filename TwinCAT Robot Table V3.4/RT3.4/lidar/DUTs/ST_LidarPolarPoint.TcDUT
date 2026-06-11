@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_LidarPolarPoint" Id="{7fcd0263-f67d-4407-9e72-11776f3ab1fa}">
+    <Declaration><![CDATA[TYPE ST_LidarPolarPoint  :
+STRUCT
+	DistanceMm : UINT;
+    Intensity  : BYTE;
+    Valid      : BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

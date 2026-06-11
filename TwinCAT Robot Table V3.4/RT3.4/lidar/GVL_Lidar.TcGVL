@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_Lidar" Id="{3e33566c-3819-4cd3-ac29-7d0666f53adf}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

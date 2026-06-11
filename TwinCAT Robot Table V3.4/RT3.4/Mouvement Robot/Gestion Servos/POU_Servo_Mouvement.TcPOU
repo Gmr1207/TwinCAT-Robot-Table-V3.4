@@ -1072,6 +1072,25 @@ END_VAR
                         <l2 n="InputItems" cet="BoxTreeOperand">
                           <o>
                             <o n="Operand" t="Operand">
+                              <v n="Operand">"GVL_Base.Ix_AU_Lidar"</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">445L</v>
+                            </o>
+                            <v n="Id">444L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
                               <v n="Operand">"GVL_Base.Ix_nAU"</v>
                               <v n="Type">"BOOL"</v>
                               <v n="Comment">""</v>
@@ -1092,9 +1111,11 @@ END_VAR
                         </l2>
                         <o n="InputParam" t="ParamList">
                           <l2 n="Names" cet="String">
+                            <v>Ix_AU_Lidar</v>
                             <v>Ix_nAU</v>
                           </l2>
                           <l2 n="Types" cet="String">
+                            <v>BOOL</v>
                             <v>BOOL</v>
                           </l2>
                         </o>

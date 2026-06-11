@@ -1,0 +1,352 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Calcul_LIDAR" Id="{4ea9e3e7-8237-4c50-a057-17826e694401}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Calcul_LIDAR
+VAR_INPUT//VARIABLE A MODIFIER dans la GVL
+	Distance_Freinage :LREAL; //distance a la quelle declancher le freinage OU Coeficien de securité
+	tailleRobot :INT;  //diametre maximum du robot
+	accel_Robot : LREAL; //déceleration du robot OU 1 si utilisé sans prise en compte de la vitesse
+	senseEvitement : BOOL; //0 = evitement par la droite, 1= evitement par la gauche
+	zoneSelectionee: ARRAY[1..36] OF BOOL;
+END_VAR
+VAR_OUTPUT
+	AU : BOOL; //a utiliser dans tous les cas 
+	Ix_Stop_Evitement: BOOl; 
+END_VAR
+VAR_IN_OUT
+	Distance_AU : LREAL; //distance a la quelle declancher l'aret d'urgence OU vitesse du robot en mm/s
+END_VAR
+
+
+
+VAR
+	//VAIABLE A NE PAS MODIFIER
+	angleRad :REAL;
+	i: INT;
+	cercleAU : INT;
+	cercleFreinage : int;
+	coX_CercleAU: INT;
+	coY_CercleAU: INT;
+	coX_CercleFreinage: INT;
+	coY_CercleFreinage: INT;
+	X : ARRAY[0..359]OF REAL;
+	Y : ARRAY[0..359]OF REAL;
+	boVisuConfig :BOOL;
+	boVisuLIDAR: BOOL;
+	
+	distanceAU : INT;
+	distanceFreinage:INT;
+	
+	disatanceFreinage: INT;
+	i2: INT;
+	i3: INT;
+	cercleRobot: INT;
+	coX_CercleRobot: INT;
+	coY_CercleRobot: INT;
+	case1 : INT;
+	corectionEnCour: BOOL;
+	robotDetect: BOOL;
+	difX: LREAL;
+	
+	// Miennes 
+	case2AU : INT ;
+	TON : TON ;
+	Mx_DistanceXReel : LREAL ;
+	Mx_DistanceYReel : LREAL ;
+	TON1: TON;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[FOR i := 0 TO 359 DO //calcul des coordoné X et Y des point pour la visualisation
+    IF decodage_lidar.aScan360[i].Valid THEN
+        angleRad := (decodage_lidar.aScan360[i].AngleDeg- 90) * 3.14159265 / 180.0;
+        x[i] := ABS((decodage_lidar.aScan360[i].DistanceMm) * COS(angleRad)); //calcul des coordoné des point du scan 
+        y[i] := ABS((decodage_lidar.aScan360[i].DistanceMm) * SIN(angleRad));
+
+    END_IF
+END_FOR
+
+
+IF accel_Robot = 1 THEN
+	cercleAU := TO_INT((Distance_AU + tailleRobot)/2.5); //afichage taille du cercle AU si utilisation sans vitessse
+	cercleFreinage := TO_INT((Distance_Freinage + tailleRobot)/2.5);//afichage taille du cercle freinage si utilisation sans vitessse
+ELSE 
+	
+	cercleAU := TO_INT((((Distance_AU * Distance_AU) / (2*accel_Robot)) * (Distance_Freinage/2)) * 2.5); //afichage taille du cercle AU si utilisation avec vitessse
+	cercleFreinage := TO_INT((((Distance_AU * Distance_AU) / (2*accel_Robot)) * Distance_Freinage) * 2.5); //afichage taille du cercle freinage si utilisation avec vitessse
+END_IF
+distanceAU := TO_INT((cercleAU*2) + tailleRobot);
+distanceFreinage := TO_INT((cercleFreinage*2) + tailleRobot);
+coX_CercleAU := 480-(cercleAu/2); //calcul des coordoné du cercle AU
+coY_CercleAU := 540-(cercleAu/2);
+coX_CercleFreinage := 480-(cercleFreinage/2);//calcul des coordoné du cercle freinage
+coY_CercleFreinage := 540-(cercleFreinage/2);
+cercleRobot := TO_INT(tailleRobot /2.5);
+coX_CercleRobot := 480-(cercleRobot/2);//calcul des coordoné du cercle freinage
+coY_CercleRobot := 540-(cercleRobot/2);
+IF boVisuConfig THEN
+	VisuElems.CurrentVisu := 'SelectionZone'; //changement visu 
+END_IF
+IF boVisuLIDAR THEN
+	VisuElems.CurrentVisu := 'LIDAR'; //changement visu 
+END_IF
+
+FOR i :=1 TO 36 DO //detection colision
+	IF i = 1 THEN //variable pour le reset de l'AU et du freinage
+		i2 := 0;
+	END_IF
+	IF zoneSelectionee[i] AND decodage_lidar.Sector10[i].MedianDistanceMm < distancefreinage AND accel_Robot <> 1 AND decodage_lidar.Sector10[i].MedianDistanceMm > distanceAU AND case1 < 10 AND NOT AU (*AND NOT gvl.corectionEnCour*) THEN //detection freinage avec vitese
+		case1 :=10;
+		
+	END_IF
+	IF zoneSelectionee[i] AND accel_Robot <> 1 AND decodage_lidar.Sector10[i].MedianDistanceMm <= distanceAU THEN //detection AU avec vitesse
+		AU :=1; 
+		i2 := i2+1;
+		
+	END_IF
+	
+	IF zoneSelectionee[i] AND decodage_lidar.Sector10[i].MedianDistanceMm < distanceFreinage AND accel_Robot = 1 (*AND NOT gvl.corectionEnCour*) AND case1 < 10 AND NOT AU  THEN //detection freinage sans vitesse
+		case1 :=10;
+		
+	END_IF
+	IF zoneSelectionee[i] AND decodage_lidar.Sector10[i].MedianDistanceMm < distanceAU AND accel_Robot = 1 THEN //detection AU sans vitesse
+		AU :=1;
+		i2:=i2+1;
+		
+	END_IF
+	IF i2 = 0 THEN //reset AU
+		AU :=0;
+	END_IF
+END_FOR
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Evitement
+
+
+
+
+
+IF NOT AU OR GVL_Servos.Mx_Hoaming_BUSY THEN 
+case1 :=1000;
+END_IF 
+
+IF AU OR NOT GVL_Servos.Mx_Hoaming_BUSY THEN 
+case1 :=0;
+END_IF 
+
+
+
+
+
+
+IF ( zoneSelectionee[1] AND decodage_lidar.Sector10[1].MedianDistanceMm > distancefreinage AND zoneSelectionee[2] AND decodage_lidar.Sector10[2].MedianDistanceMm > distancefreinage AND zoneSelectionee[36] AND decodage_lidar.Sector10[1].MedianDistanceMm > distancefreinage ) AND NOT TON.Q AND case1 = 10   THEN //detection freinage avec vitese
+	case1 :=1;
+		
+END_IF
+
+
+TON( IN := case1 = 10, PT := T#10S);
+
+TON1( IN := case1 = 1, PT := T#2S);
+
+CASE case1 OF
+
+0:	GVL_Lidar.zoneSelectionee_GVL[36]:=1;
+GVL_Lidar.zoneSelectionee_GVL[1]:=1;
+GVL_Lidar.zoneSelectionee_GVL[2]:=1;
+GVL_Lidar.LampeEvitement := 0; 
+
+Ix_Stop_Evitement:= FALSE ; 
+
+1: IF TON1.Q THEN 
+
+ Ix_Stop_Evitement:= FALSE ; 
+   GVL_Servos.PosXObject := Mx_DistanceXReel;
+   GVL_Servos.PosYObject := Mx_DistanceYReel;
+END_IF
+   
+IF GVL_Servos.PosYObject >1  AND GVL_Servos.PosXObject > 1 THEN
+    GVL_Servos.BpDeplacement := TRUE ; 
+    case1 :=2;
+END_IF   
+   
+2:  
+
+IF  GVL_Servos.QxDeplacementActif THEN 
+   GVL_Servos.BpDeplacement := FALSE ;
+   case1 :=0;
+END_IF
+
+10: 
+GVL_Servos.BpDeplacement := FALSE ;
+Ix_Stop_Evitement:= TRUE ;
+GVL_Lidar.LampeEvitement := 1; 
+//GVL_Servos.PosXObject := 0;
+//GVL_Servos.PosYObject := 0;
+GVL_Servos.ObjectifDistance := 0;
+GVL_Servos.ObjectifAngle := 0;
+IF GVL_Servos.BpFastStop AND TON.Q THEN
+case1 :=12;
+END_IF
+
+
+12: Mx_DistanceXReel := GVL_Servos.PosXObject ;
+	Mx_DistanceYReel := GVL_Servos.PosYObject ;
+	
+    case1 :=13;
+	
+13: // GVL_Servos.PosXObject := 0;
+    // GVL_Servos.PosYObject := 0;
+    case1 :=15;
+
+
+
+15:
+IF GVL_Servos.BpFastStop THEN 
+Ix_Stop_Evitement:= FALSE ;
+case1 := 20;
+
+END_IF
+
+20: IF GVL_Cal_Pos.IrPosY >= 140 AND GVL_Cal_Pos.IrPosY < 400  THEN 
+	GVL_Servos.Modedeplacement := 1;
+	case1 := 22;
+END_IF
+
+21:
+IF GVL_Cal_Pos.IrPosY > 400 AND GVL_Cal_Pos.IrPosY <= 630  THEN 
+	GVL_Servos.Modedeplacement := 1;
+	case1 := 23;
+END_IF
+
+22: IF case1 = 22 THEN 
+	GVL_Servos.ObjectifAngle := -90 ;
+	case1 := 30;
+END_IF
+
+23: IF case1 = 23 THEN 
+	GVL_Servos.ObjectifAngle := 90 ;
+	case1 := 30;
+END_IF
+
+
+30: IF case1 = 30 AND ( GVL_Servos.ObjectifAngle = 90 OR GVL_Servos.ObjectifAngle = -90 ) THEN 
+	GVL_Lidar.zoneSelectionee_GVL[36]:=1;
+    GVL_Lidar.zoneSelectionee_GVL[1]:=1;
+    GVL_Lidar.zoneSelectionee_GVL[2]:=1;
+	GVL_Servos.BpDeplacement := TRUE ;
+	case1 := 40;
+END_IF
+
+
+
+     
+40: 
+
+     IF GVL_Servos.QxErreur THEN 
+        GVL_Servos.BpReset := TRUE ;
+END_IF 	 
+
+
+
+     IF case1 = 40 AND GVL_Servos.QxDeplacementDone THEN 
+		 
+	 GVL_Servos.BpReset := FALSE;
+	 GVL_Servos.ObjectifAngle := 0 ;
+      GVL_Servos.BpDeplacement := FALSE ;
+	 case1 := 60;
+END_IF     
+
+50: IF case1 = 50 THEN 
+	GVL_Servos.BpDeplacement := TRUE ;
+	case1 := 60;
+END_IF
+
+51: // Test
+
+
+
+60: 
+    IF case1 = 60 AND GVL_Servos.QxDeplacementDone  THEN 
+	 GVL_Servos.BpDeplacement := FALSE ;
+	 GVL_Servos.ObjectifDistance := ( tailleRobot * 1.2 ); 
+     case1 := 70;
+END_IF
+
+70: IF case1 = 70 THEN 
+	GVL_Servos.BpDeplacement := TRUE ;
+	case1 := 80 ;
+END_IF
+
+80:
+
+IF case1 = 80 AND GVL_Servos.QxDeplacementDone   THEN 
+	 GVL_Servos.BpDeplacement := FALSE ;
+	 GVL_Servos.ObjectifDistance := 0; 
+     case1 := 0;
+END_IF
+
+1000: GVL_Lidar.zoneSelectionee_GVL[36]:=0;
+GVL_Lidar.zoneSelectionee_GVL[1]:=0;
+GVL_Lidar.zoneSelectionee_GVL[2]:=0;	
+
+
+END_CASE 
+
+ 
+
+(*
+CASE case2AU OF
+
+0: IF AU THEN 
+	case2AU := 10 ;
+
+END_IF
+
+
+	
+10: IF case2AU = 10 THEN 
+	 AU :=1;
+	 case2AU := 20 ;
+END_IF
+
+20: IF AU = 1 THEN 
+	AU :=0;
+    case2AU := 30 ;
+END_IF
+
+30: IF AU = 0 THEN 
+	GVL_Servos.BpReset := 1;
+    case2AU := 40 ;
+
+END_IF
+
+40: IF NOT GVL_Servos.QxErreur THEN 
+	GVL_Servos.BpReset := 0;
+	case2AU := 50 ;
+END_IF
+
+50 :
+
+
+
+END_CASE
+
+*)
+
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

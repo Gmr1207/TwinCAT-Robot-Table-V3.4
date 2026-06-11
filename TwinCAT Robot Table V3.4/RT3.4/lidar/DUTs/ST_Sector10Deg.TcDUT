@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_Sector10Deg" Id="{ef42abc8-bd0d-43ef-a816-dee61a6f3573}">
+    <Declaration><![CDATA[TYPE ST_Sector10Deg :
+STRUCT
+     MedianDistanceMm : UINT;  // médiane des distances dans le secteur
+    Count          : UINT;  // nombre de points utilisés pour la moyenne
+    Valid          : BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>
