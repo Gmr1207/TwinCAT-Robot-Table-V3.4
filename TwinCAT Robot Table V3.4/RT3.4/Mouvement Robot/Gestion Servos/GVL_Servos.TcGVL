@@ -10,8 +10,6 @@ I_Servo_1_D : AXIS_REF ;
 I_Servo_2_G : AXIS_REF ;	
 
 
-Id_CodeurextGauche1                   : AXIS_REF                                    ;
-	Id_CodeurextDroite1                  : AXIS_REF  ;
 
 // Variables HMI
 

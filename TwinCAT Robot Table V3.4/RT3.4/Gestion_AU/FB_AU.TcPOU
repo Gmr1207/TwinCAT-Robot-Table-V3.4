@@ -24,7 +24,7 @@ ELSE
 Qx_AU :=0  ;		
 
 END_IF
-test1 :=0;]]></ST>
+]]></ST>
     </Implementation>
   </POU>
 </TcPlcObject>

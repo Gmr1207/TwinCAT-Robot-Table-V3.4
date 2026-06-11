@@ -13,6 +13,7 @@ VAR
 	LR_Pos_ADVY: LREAL;
 	BOOL_Couleur: BOOL;
 	FB_AU_0: FB_AU;
+	FB_RetourEfficace_V2_0: FB_RetourEfficace_V2;
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -759,10 +760,10 @@ END_VAR
                   <v n="OutCommented">false</v>
                   <l2 n="NetworkItems" cet="BoxTreeBox">
                     <o>
-                      <v n="BoxType">"FB_Hoaming_Test"</v>
+                      <v n="BoxType">"FB_RetourEfficace_V2"</v>
                       <o n="Instance" t="Operand">
-                        <v n="Operand">"FB_Hoaming_0"</v>
-                        <v n="Type">"FB_Hoaming_Test"</v>
+                        <v n="Operand">"FB_RetourEfficace_V2_0"</v>
+                        <v n="Type">"FB_RetourEfficace_V2"</v>
                         <v n="Comment">""</v>
                         <v n="SymbolComment">""</v>
                         <v n="Address">""</v>
@@ -774,21 +775,21 @@ END_VAR
                         <v n="LValue">false</v>
                         <v n="Boolean">false</v>
                         <v n="IsInstance">true</v>
-                        <v n="Id">384L</v>
+                        <v n="Id">430L</v>
                       </o>
                       <o n="OutputItems" t="OutputItemList">
                         <l2 n="OutputItems" />
                       </o>
                       <o n="Flags" t="Flags">
                         <v n="Flags">0</v>
-                        <v n="Fixed">true</v>
+                        <v n="Fixed">false</v>
                         <v n="Extensible">false</v>
                       </o>
                       <n n="InputFlags" />
                       <l2 n="InputItems" cet="BoxTreeOperand">
                         <o>
                           <o n="Operand" t="Operand">
-                            <v n="Operand">"GVL_Servos.Ix_HoamingPos_Testeur_12"</v>
+                            <v n="Operand">"GVL_RetourEfficace.Ix_RetourEfficace"</v>
                             <v n="Type">"BOOL"</v>
                             <v n="Comment">""</v>
                             <v n="SymbolComment">""</v>
@@ -801,14 +802,14 @@ END_VAR
                             <v n="LValue">false</v>
                             <v n="Boolean">false</v>
                             <v n="IsInstance">false</v>
-                            <v n="Id">244L</v>
+                            <v n="Id">433L</v>
                           </o>
-                          <v n="Id">243L</v>
+                          <v n="Id">432L</v>
                         </o>
                         <o>
                           <o n="Operand" t="Operand">
-                            <v n="Operand">"GVL_Servos.Ix_Test"</v>
-                            <v n="Type">"BOOL"</v>
+                            <v n="Operand">"GVL_Cal_Pos.IrPosX"</v>
+                            <v n="Type">"LREAL"</v>
                             <v n="Comment">""</v>
                             <v n="SymbolComment">""</v>
                             <v n="Address">""</v>
@@ -820,14 +821,14 @@ END_VAR
                             <v n="LValue">false</v>
                             <v n="Boolean">false</v>
                             <v n="IsInstance">false</v>
-                            <v n="Id">260L</v>
+                            <v n="Id">435L</v>
                           </o>
-                          <v n="Id">259L</v>
+                          <v n="Id">434L</v>
                         </o>
                         <o>
                           <o n="Operand" t="Operand">
-                            <v n="Operand">"GVL_Servos.I_Servo_1_D"</v>
-                            <v n="Type">"AXIS_REF"</v>
+                            <v n="Operand">"GVL_Cal_Pos.IrPosY"</v>
+                            <v n="Type">"LREAL"</v>
                             <v n="Comment">""</v>
                             <v n="SymbolComment">""</v>
                             <v n="Address">""</v>
@@ -839,14 +840,14 @@ END_VAR
                             <v n="LValue">false</v>
                             <v n="Boolean">false</v>
                             <v n="IsInstance">false</v>
-                            <v n="Id">248L</v>
+                            <v n="Id">437L</v>
                           </o>
-                          <v n="Id">247L</v>
+                          <v n="Id">436L</v>
                         </o>
                         <o>
                           <o n="Operand" t="Operand">
-                            <v n="Operand">"GVL_Servos.I_Servo_2_G"</v>
-                            <v n="Type">"AXIS_REF"</v>
+                            <v n="Operand">"GVL_Servos.PosXObject"</v>
+                            <v n="Type">"LREAL"</v>
                             <v n="Comment">""</v>
                             <v n="SymbolComment">""</v>
                             <v n="Address">""</v>
@@ -858,14 +859,14 @@ END_VAR
                             <v n="LValue">false</v>
                             <v n="Boolean">false</v>
                             <v n="IsInstance">false</v>
-                            <v n="Id">250L</v>
+                            <v n="Id">439L</v>
                           </o>
-                          <v n="Id">249L</v>
+                          <v n="Id">438L</v>
                         </o>
                         <o>
                           <o n="Operand" t="Operand">
-                            <v n="Operand">"GVL_Servos.Id_CodeurextGauche1"</v>
-                            <v n="Type">"AXIS_REF"</v>
+                            <v n="Operand">"GVL_Servos.PosYObject"</v>
+                            <v n="Type">"LREAL"</v>
                             <v n="Comment">""</v>
                             <v n="SymbolComment">""</v>
                             <v n="Address">""</v>
@@ -877,46 +878,25 @@ END_VAR
                             <v n="LValue">false</v>
                             <v n="Boolean">false</v>
                             <v n="IsInstance">false</v>
-                            <v n="Id">252L</v>
+                            <v n="Id">441L</v>
                           </o>
-                          <v n="Id">251L</v>
-                        </o>
-                        <o>
-                          <o n="Operand" t="Operand">
-                            <v n="Operand">"GVL_Servos.Id_CodeurextDroite1"</v>
-                            <v n="Type">"AXIS_REF"</v>
-                            <v n="Comment">""</v>
-                            <v n="SymbolComment">""</v>
-                            <v n="Address">""</v>
-                            <o n="Flags" t="Flags">
-                              <v n="Flags">0</v>
-                              <v n="Fixed">false</v>
-                              <v n="Extensible">false</v>
-                            </o>
-                            <v n="LValue">false</v>
-                            <v n="Boolean">false</v>
-                            <v n="IsInstance">false</v>
-                            <v n="Id">254L</v>
-                          </o>
-                          <v n="Id">253L</v>
+                          <v n="Id">440L</v>
                         </o>
                       </l2>
                       <o n="InputParam" t="ParamList">
                         <l2 n="Names" cet="String">
-                          <v>Ix_Hoaming</v>
-                          <v>Ix_Test</v>
-                          <v>I_Servo_1D</v>
-                          <v>I_Servo_2G</v>
-                          <v>I_ServoExt1</v>
-                          <v>I_ServoExt2</v>
+                          <v>Ix_RetourEfficace</v>
+                          <v>Ir_PosX</v>
+                          <v>Ir_PosY</v>
+                          <v>Ir_PosXVoulue</v>
+                          <v>Ir_PosYVoulue</v>
                         </l2>
                         <l2 n="Types" cet="String">
                           <v>BOOL</v>
                           <v>BOOL</v>
-                          <v>AXIS_REF[REF]</v>
-                          <v>AXIS_REF[REF]</v>
-                          <v>AXIS_REF[REF]</v>
-                          <v>AXIS_REF[REF]</v>
+                          <v>BOOL</v>
+                          <v>BOOL</v>
+                          <v>BOOL</v>
                         </l2>
                       </o>
                       <o n="OutputParam" t="ParamList">
@@ -929,11 +909,11 @@ END_VAR
                       <n n="STSnippet" />
                       <v n="ContainsExtensibleInputs">false</v>
                       <v n="ProvidesSTSnippet">false</v>
-                      <v n="Id">385L</v>
+                      <v n="Id">431L</v>
                     </o>
                   </l2>
                   <l2 n="Connectors" />
-                  <v n="Id">240L</v>
+                  <v n="Id">429L</v>
                 </o>
                 <o>
                   <v n="ILActive">false</v>

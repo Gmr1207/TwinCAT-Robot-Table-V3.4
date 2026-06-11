@@ -31,6 +31,7 @@ CASE Step OF
 0: Mx_SetPret := TRUE ;
 
 IF Ix_Hoaming AND Step = 0 AND GVL_Servos.PowerMoteur THEN 
+	GVL_RetourEfficace.Ix_RetourEfficace := FALSE;
     GVL_Servos.ReglageVitesse := 50 ;
     GVL_Servos.ReglageAcceleration := 50  ;
     Mx_0 := TRUE ;
@@ -220,6 +221,7 @@ END_IF
 	GVL_Servos.ObjectifAngle := 0 ;
 	GVL_Servos.ReglageVitesse := 400 ;
     GVL_Servos.ReglageAcceleration := 400  ;
+	GVL_RetourEfficace.Ix_RetourEfficace := TRUE;
     Mx_0 := FALSE ;
 	Step := 0;
     END_IF

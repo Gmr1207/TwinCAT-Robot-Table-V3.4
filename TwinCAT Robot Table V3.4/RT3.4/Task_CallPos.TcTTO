@@ -2,7 +2,7 @@
 <TcPlcObject Version="1.1.0.1">
   <Task Name="Task_CallPos" Id="{73c5adfc-2bc7-415a-96ab-8223472095a2}">
     <!--CycleTime in micro seconds.-->
-    <CycleTime>2000</CycleTime>
+    <CycleTime>10000</CycleTime>
     <Priority>3</Priority>
     <PouCall>
       <Name>POU_CallPos</Name>

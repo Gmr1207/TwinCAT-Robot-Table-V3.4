@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_RetourEfficace" Id="{4de9436f-f37f-4144-b13e-4109899cd06f}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+Ix_RetourEfficace : BOOL ;	
+Ir_PosX : LREAL;
+Ir_PosY : LREAL;	
+Ir_PosXVoulue : LREAL;
+Ir_PosYVoulue : LREAL;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

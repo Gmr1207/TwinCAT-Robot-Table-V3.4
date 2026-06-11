@@ -8,8 +8,8 @@ VAR_GLOBAL
     IrPosAngle                      : LREAL                                    ;
 	Ix_HoamingPos                   : BOOL                                     ; 
 	
-    (*Id_CodeurextGauche1                   : AXIS_REF                                    ;
-	Id_CodeurextDroite1                  : AXIS_REF                                    ;*)
+    Id_CodeurextGauche1                   : AXIS_REF                                    ;
+	Id_CodeurextDroite1                  : AXIS_REF                                    ;
 END_VAR
 
 VAR_GLOBAL CONSTANT

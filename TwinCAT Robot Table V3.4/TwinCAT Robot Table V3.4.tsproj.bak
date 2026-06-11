@@ -2203,11 +2203,15 @@ External Setpoint Generation:
 		</Motion>
 		<Plc>
 			<Project GUID="{69A561A3-A2A9-4B1A-8871-FBE5325B0915}" Name="RT3.4" PrjFilePath="RT3.4\RT3.4.plcproj" TmcFilePath="RT3.4\RT3.4.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{EA2731EA-FCDB-EECD-E4AD-80F2F918C71F}" TmcPath="RT3.4\RT3.4.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{393632BF-18B3-0895-1CDF-0311119A310D}" TmcPath="RT3.4\RT3.4.tmc">
 					<Name>RT3 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="2" ContextId="4" AreaNo="65">
 						<Name>PlcTask Outputs</Name>
+						<Var>
+							<Name>POU_Servo_Mouvement.FB_Hoaming_0.I_ServoExt.PlcToNc</Name>
+							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
 						<Var>
 							<Name>GVL_Turbine.SampleBase_10</Name>
 							<Comment><![CDATA[ Sample Base de min 0.2-1s]]></Comment>
@@ -2250,6 +2254,21 @@ External Setpoint Generation:
 							<Name>GVL_Turbine.SampleMoteur_Vit5</Name>
 							<Type>INT</Type>
 						</Var>
+						<Var>
+							<Name>GVL_Cal_Pos.Id_CodeurextGauche1.PlcToNc</Name>
+							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Cal_Pos.Id_CodeurextDroite1.PlcToNc</Name>
+							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
+					</Vars>
+					<Vars VarGrpType="1" ContextId="4" AreaNo="64">
+						<Name>PlcTask Inputs</Name>
+						<Var>
+							<Name>POU_Servo_Mouvement.FB_Hoaming_0.I_ServoExt.NcToPlc</Name>
+							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
 					</Vars>
 					<Vars VarGrpType="2" ContextId="3" AreaNo="49">
 						<Name>Task_Deplacement Outputs</Name>
@@ -2259,18 +2278,6 @@ External Setpoint Generation:
 						</Var>
 						<Var>
 							<Name>GVL_Servos.I_Servo_2_G.PlcToNc</Name>
-							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Servos.Id_CodeurextGauche1.PlcToNc</Name>
-							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Servos.Id_CodeurextDroite1.PlcToNc</Name>
-							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
-						</Var>
-						<Var>
-							<Name>POU_Servo_Mouvement.FB_Hoaming_0.I_ServoExt.PlcToNc</Name>
 							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
 					</Vars>
@@ -2288,19 +2295,15 @@ External Setpoint Generation:
 							<Name>GVL_Base.Ix_nAU</Name>
 							<Type>BOOL</Type>
 						</Var>
-						<Var>
-							<Name>POU_Servo_Mouvement.FB_Hoaming_0.I_ServoExt.NcToPlc</Name>
-							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
-						</Var>
 					</Vars>
 					<Vars VarGrpType="1" ContextId="1" AreaNo="16">
 						<Name>Task_CallPos Inputs</Name>
 						<Var>
-							<Name>GVL_Servos.Id_CodeurextGauche1.NcToPlc</Name>
+							<Name>GVL_Cal_Pos.Id_CodeurextGauche1.NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>GVL_Servos.Id_CodeurextDroite1.NcToPlc</Name>
+							<Name>GVL_Cal_Pos.Id_CodeurextDroite1.NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 					</Vars>
@@ -2398,7 +2401,7 @@ External Setpoint Generation:
 							<SyncMan>001080002600010001000000500080008000001026010000</SyncMan>
 							<SyncMan>801080002200010002000000500080008000801022010000</SyncMan>
 							<SyncMan>001106002400010003000000000000000600001124010000</SyncMan>
-							<SyncMan>00120a002000010004000000000000000a00001220010000</SyncMan>
+							<SyncMan>00120c002000010004000000000000000a00001220010000</SyncMan>
 							<Fmmu>0000000000000000001100020100000001000000000000000000000000000000</Fmmu>
 							<Fmmu>0000000000000000001200010100000002000000000000000000000000000000</Fmmu>
 							<Fmmu>00000000000000000d0800010100000003000000000000000000000000000000</Fmmu>
@@ -2448,7 +2451,7 @@ External Setpoint Generation:
 									<Type>DINT</Type>
 								</Entry>
 							</Pdo>
-							<Pdo Name="DRV Torque actual value" Index="#x1a03" Flags="#x0010">
+							<Pdo Name="DRV Torque actual value" Index="#x1a03" Flags="#x0010" SyncMan="3">
 								<Entry Name="Torque actual value" Index="#x6010" Sub="#x08">
 									<Type>INT</Type>
 								</Entry>
@@ -3033,7 +3036,7 @@ External Setpoint Generation:
 							<SyncMan>001080002600010001000000500080008000001026010000</SyncMan>
 							<SyncMan>801080002200010002000000500080008000801022010000</SyncMan>
 							<SyncMan>001106002400010003000000000000000600001124010000</SyncMan>
-							<SyncMan>00120a002000010004000000000000000a00001220010000</SyncMan>
+							<SyncMan>00120c002000010004000000000000000a00001220010000</SyncMan>
 							<Fmmu>0000000000000000001100020100000001000000000000000000000000000000</Fmmu>
 							<Fmmu>0000000000000000001200010100000002000000000000000000000000000000</Fmmu>
 							<Fmmu>00000000000000000d0800010100000003000000000000000000000000000000</Fmmu>
@@ -3083,7 +3086,7 @@ External Setpoint Generation:
 									<Type>DINT</Type>
 								</Entry>
 							</Pdo>
-							<Pdo Name="DRV Torque actual value" Index="#x1a03" Flags="#x0010">
+							<Pdo Name="DRV Torque actual value" Index="#x1a03" Flags="#x0010" SyncMan="3">
 								<Entry Name="Torque actual value" Index="#x6010" Sub="#x08">
 									<Type>INT</Type>
 								</Entry>
@@ -5782,12 +5785,14 @@ External Setpoint Generation:
 	<Mappings>
 		<MappingInfo Identifier="{00000000-2004-0850-0320-500841000403}" Id="#x02030020"/>
 		<MappingInfo Identifier="{00000000-0010-0304-3000-040310000403}" Id="#x02030010"/>
-		<MappingInfo Identifier="{00000000-0020-0304-3000-040322000403}" Id="#x02030050"/>
-		<MappingInfo Identifier="{08502002-0010-0500-0120-500830000403}" Id="#x02030040" Watchdog="04000000040000000400000004000000"/>
-		<MappingInfo Identifier="{05000010-2004-0850-3000-040303205008}" Id="#x02030030" Watchdog="04000000040000000400000004000000"/>
+		<MappingInfo Identifier="{00000000-0020-0304-3000-040322000403}" Id="#x02030030"/>
+		<MappingInfo Identifier="{08502002-0010-0500-0120-500830000403}" Id="#x02030050" Watchdog="04000000040000000400000004000000"/>
+		<MappingInfo Identifier="{05000010-2004-0850-3000-040303205008}" Id="#x02030040" Watchdog="04000000040000000400000004000000"/>
+		<MappingInfo Identifier="{05000010-2005-0850-3000-040304205008}" Id="#x02030060" Watchdog="0a000000040000000400000004000000"/>
 		<OwnerA Name="TINC^NC-Task 1 SAF^Axes^Axis 1 (Droite)">
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 2 (EL7411)">
 				<Link VarA="Drive^Inputs^In^nDataIn1" VarB="DRV Following error actual value^Following error actual value"/>
+				<Link VarA="Drive^Inputs^In^nDataIn3[0]" VarB="DRV Torque actual value^Torque actual value"/>
 				<Link VarA="Drive^Inputs^In^nDcOutputTime" VarB="InfoData^DcOutputShift"/>
 				<Link VarA="Drive^Inputs^In^nState1" VarB="DRV Statusword^Statusword"/>
 				<Link VarA="Drive^Inputs^In^nState2" VarB="DRV Statusword^Statusword" Size="8" OffsB="8"/>
@@ -5805,6 +5810,7 @@ External Setpoint Generation:
 		<OwnerA Name="TINC^NC-Task 1 SAF^Axes^Axis 2 (Gauche)">
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 3 (EL7411)">
 				<Link VarA="Drive^Inputs^In^nDataIn1" VarB="DRV Following error actual value^Following error actual value"/>
+				<Link VarA="Drive^Inputs^In^nDataIn3[0]" VarB="DRV Torque actual value^Torque actual value"/>
 				<Link VarA="Drive^Inputs^In^nDcOutputTime" VarB="InfoData^DcOutputShift"/>
 				<Link VarA="Drive^Inputs^In^nState1" VarB="DRV Statusword^Statusword"/>
 				<Link VarA="Drive^Inputs^In^nState2" VarB="DRV Statusword^Statusword" Size="8" OffsB="8"/>
@@ -5873,7 +5879,7 @@ External Setpoint Generation:
 				<Link VarA="Enc^Outputs^Out^nDataOut1" VarB="ENC Control Channel 1^Set counter value"/>
 			</OwnerB>
 		</OwnerA>
-		<OwnerA Name="TIPC^RT3^RT3 Instance">
+		<OwnerA Name="TIPC^RT3.4^RT3 Instance">
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1100)^Term 6 (EL1809)">
 				<Link VarA="Task_Deplacement Inputs^GVL_Base.Ix_nAU" VarB="Channel 5^Input"/>
 			</OwnerB>
@@ -5886,12 +5892,12 @@ External Setpoint Generation:
 				<Link VarA="Task_Deplacement Outputs^GVL_Servos.I_Servo_2_G.PlcToNc" VarB="Inputs^FromPlc"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Codeur Droite">
-				<Link VarA="Task_CallPos Inputs^GVL_Servos.Id_CodeurextDroite1.NcToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="Task_Deplacement Outputs^GVL_Servos.Id_CodeurextDroite1.PlcToNc" VarB="Inputs^FromPlc"/>
+				<Link VarA="PlcTask Outputs^GVL_Cal_Pos.Id_CodeurextDroite1.PlcToNc" VarB="Inputs^FromPlc"/>
+				<Link VarA="Task_CallPos Inputs^GVL_Cal_Pos.Id_CodeurextDroite1.NcToPlc" VarB="Outputs^ToPlc"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^Codeur Gauche">
-				<Link VarA="Task_CallPos Inputs^GVL_Servos.Id_CodeurextGauche1.NcToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="Task_Deplacement Outputs^GVL_Servos.Id_CodeurextGauche1.PlcToNc" VarB="Inputs^FromPlc"/>
+				<Link VarA="PlcTask Outputs^GVL_Cal_Pos.Id_CodeurextGauche1.PlcToNc" VarB="Inputs^FromPlc"/>
+				<Link VarA="Task_CallPos Inputs^GVL_Cal_Pos.Id_CodeurextGauche1.NcToPlc" VarB="Outputs^ToPlc"/>
 			</OwnerB>
 		</OwnerA>
 	</Mappings>

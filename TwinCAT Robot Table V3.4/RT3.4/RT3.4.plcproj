@@ -52,11 +52,15 @@
     <Compile Include="Mouvement Robot\2_CalPos\FB_Calcul_Position_V4_3.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Mouvement Robot\2_CalPos\FB_RetourEfficace.TcPOU">
+    <Compile Include="Mouvement Robot\2_CalPos\FB_RetourEfficace_V2.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Mouvement Robot\2_CalPos\GVL_Cal_Pos.TcGVL">
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Mouvement Robot\2_CalPos\GVL_RetourEfficace.TcGVL">
+      <SubType>Code</SubType>
+      <LinkAlways>true</LinkAlways>
     </Compile>
     <Compile Include="Mouvement Robot\Gestion Servos\Enum_ModeDepl.TcDUT">
       <SubType>Code</SubType>
