@@ -1570,7 +1570,7 @@ External Setpoint Generation:
 				<Task Id="7" Priority="2" CycleTime="400000" AmsPort="352" AdtTasks="true">
 					<Name>Task Visu</Name>
 				</Task>
-				<Task Id="8" Priority="3" CycleTime="20000" AmsPort="353" AdtTasks="true">
+				<Task Id="8" Priority="3" CycleTime="100000" AmsPort="353" AdtTasks="true">
 					<Name>Task CallPos</Name>
 				</Task>
 				<Task Id="9" Priority="5" CycleTime="100000" AmsPort="354" AdtTasks="true">
@@ -1891,8 +1891,9 @@ External Setpoint Generation:
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="4">
-						<EncPara ScaleFactorNumerator="5.865439274" ScaleFactorDenominator="1024" MaxCount="#xffffffff">
+						<EncPara ScaleFactorNumerator="5.865439274" ScaleFactorDenominator="1024" Inverse="true" MaxCount="#xffffffff">
 							<Inc RefSoftSyncMask="#x0000ffff"/>
+							<ParameterChanged>8</ParameterChanged>
 						</EncPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -2050,6 +2051,7 @@ External Setpoint Generation:
 					<Encoder Name="Enc" EncType="4">
 						<EncPara ScaleFactorNumerator="5.864762537" ScaleFactorDenominator="1024" Inverse="true" MaxCount="#xffffffff">
 							<Inc RefSoftSyncMask="#x0000ffff"/>
+							<ParameterChanged>8</ParameterChanged>
 						</EncPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -2203,7 +2205,7 @@ External Setpoint Generation:
 		</Motion>
 		<Plc>
 			<Project GUID="{69A561A3-A2A9-4B1A-8871-FBE5325B0915}" Name="RT3.4" PrjFilePath="RT3.4\RT3.4.plcproj" TmcFilePath="RT3.4\RT3.4.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{393632BF-18B3-0895-1CDF-0311119A310D}" TmcPath="RT3.4\RT3.4.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{687A519F-503B-2915-880F-018BFCB7B861}" TmcPath="RT3.4\RT3.4.tmc">
 					<Name>RT3 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="2" ContextId="4" AreaNo="65">
@@ -2324,7 +2326,7 @@ External Setpoint Generation:
 								<OTCID>#x02010080</OTCID>
 							</ManualConfig>
 							<Priority>3</Priority>
-							<CycleTime>2000000</CycleTime>
+							<CycleTime>10000000</CycleTime>
 						</Context>
 						<Context>
 							<Id>2</Id>
@@ -5786,7 +5788,7 @@ External Setpoint Generation:
 		<MappingInfo Identifier="{00000000-2004-0850-0320-500841000403}" Id="#x02030020"/>
 		<MappingInfo Identifier="{00000000-0010-0304-3000-040310000403}" Id="#x02030010"/>
 		<MappingInfo Identifier="{00000000-0020-0304-3000-040322000403}" Id="#x02030030"/>
-		<MappingInfo Identifier="{08502002-0010-0500-0120-500830000403}" Id="#x02030050" Watchdog="04000000040000000400000004000000"/>
+		<MappingInfo Identifier="{08502002-0010-0500-0120-500830000403}" Id="#x02030050" Watchdog="04000000140000000400000004000000"/>
 		<MappingInfo Identifier="{05000010-2004-0850-3000-040303205008}" Id="#x02030040" Watchdog="04000000040000000400000004000000"/>
 		<MappingInfo Identifier="{05000010-2005-0850-3000-040304205008}" Id="#x02030060" Watchdog="0a000000040000000400000004000000"/>
 		<OwnerA Name="TINC^NC-Task 1 SAF^Axes^Axis 1 (Droite)">

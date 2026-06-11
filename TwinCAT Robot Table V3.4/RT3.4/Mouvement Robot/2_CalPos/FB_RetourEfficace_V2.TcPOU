@@ -4,10 +4,7 @@
     <Declaration><![CDATA[FUNCTION_BLOCK FB_RetourEfficace_V2
 VAR_INPUT
 Ix_RetourEfficace : BOOL ;	
-Ir_PosX : LREAL;
-Ir_PosY : LREAL;	
-Ir_PosXVoulue : LREAL;
-Ir_PosYVoulue : LREAL;
+
 END_VAR
 VAR_OUTPUT
 	
@@ -37,7 +34,7 @@ CASE RetourEfficace_Step OF
 
     1:
         
-        IF Ir_PosX > Ir_PosXVoulue OR Ir_PosY > Ir_PosYVoulue THEN
+        IF GVL_Cal_Pos.IrPosX> GVL_Servos.PosXObject OR GVL_Cal_Pos.IrPosY > GVL_Servos.PosYObject THEN
             GVL_Servos.BpMarcheArriere := TRUE;
         ELSE
             GVL_Servos.BpMarcheArriere := FALSE;
