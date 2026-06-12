@@ -54,6 +54,7 @@ Id;Default
 784;Rot. Actif
 339;Sauvegarder
 478;Selecteur ON / OFF ESC
+912;Selection zone
 714;Set position
 731;Start Deplacement
 80;Statut

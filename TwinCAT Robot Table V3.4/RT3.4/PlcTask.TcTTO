@@ -2,10 +2,10 @@
 <TcPlcObject Version="1.1.0.1">
   <Task Name="PlcTask" Id="{54085713-f2e7-420b-acb7-5539d00b2d21}">
     <!--CycleTime in micro seconds.-->
-    <CycleTime>5000</CycleTime>
+    <CycleTime>1000</CycleTime>
     <Priority>20</Priority>
     <PouCall>
-      <Name>PRG_MAIN</Name>
+      <Name>MAIN</Name>
     </PouCall>
     <TaskFBGuid>{8e66d4eb-d24d-4d4a-b010-3edf5e8c6ea8}</TaskFBGuid>
     <Fb_init>{e2a9c80f-bf82-42a2-9382-ff02659a3ae1}</Fb_init>

@@ -163,10 +163,10 @@ TON1( IN := case1 = 1, PT := T#2S);
 
 CASE case1 OF
 
-0:	GVL_Lidar.zoneSelectionee_GVL[36]:=1;
-GVL_Lidar.zoneSelectionee_GVL[1]:=1;
-GVL_Lidar.zoneSelectionee_GVL[2]:=1;
-GVL_Lidar.LampeEvitement := 0; 
+0:	zoneSelectionee[36]:=1;
+    zoneSelectionee[1]:=1;
+    zoneSelectionee[2]:=1;
+//GVL_Lidar.LampeEvitement := 0; 
 
 Ix_Stop_Evitement:= FALSE ; 
 
@@ -192,7 +192,7 @@ END_IF
 10: 
 GVL_Servos.BpDeplacement := FALSE ;
 Ix_Stop_Evitement:= TRUE ;
-GVL_Lidar.LampeEvitement := 1; 
+//GVL_Lidar.LampeEvitement := 1; 
 //GVL_Servos.PosXObject := 0;
 //GVL_Servos.PosYObject := 0;
 GVL_Servos.ObjectifDistance := 0;
@@ -243,9 +243,9 @@ END_IF
 
 
 30: IF case1 = 30 AND ( GVL_Servos.ObjectifAngle = 90 OR GVL_Servos.ObjectifAngle = -90 ) THEN 
-	GVL_Lidar.zoneSelectionee_GVL[36]:=1;
-    GVL_Lidar.zoneSelectionee_GVL[1]:=1;
-    GVL_Lidar.zoneSelectionee_GVL[2]:=1;
+	zoneSelectionee[36]:=1;
+    zoneSelectionee[1]:=1;
+    zoneSelectionee[2]:=1;
 	GVL_Servos.BpDeplacement := TRUE ;
 	case1 := 40;
 END_IF
@@ -298,10 +298,9 @@ IF case1 = 80 AND GVL_Servos.QxDeplacementDone   THEN
      case1 := 0;
 END_IF
 
-1000: GVL_Lidar.zoneSelectionee_GVL[36]:=0;
-GVL_Lidar.zoneSelectionee_GVL[1]:=0;
-GVL_Lidar.zoneSelectionee_GVL[2]:=0;	
-
+1000: zoneSelectionee[36]:=0;
+    zoneSelectionee[1]:=0;
+    zoneSelectionee[2]:=0;
 
 END_CASE 
 

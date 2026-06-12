@@ -85,7 +85,7 @@ Sector10   : ARRAY[0..35] OF ST_Sector10Deg; //les distance par lot de 10°
 	Y : ARRAY[0..359]OF REAL;
 	startAngle: INT;
 	normalizedAngleIdx: INT;
-	Calcul_LIDAR_1: Calcul_LIDAR;
+	zoneSelectionee: ARRAY[1..36] OF BOOL;	
 END_VAR
 
 VAR CONSTANT //pour le CRC
@@ -125,9 +125,17 @@ VAR CONSTANT //pour le CRC
     ];
 END_VAR
 
+
+
+
+
+VAR 
+
+END_VAR
+
 VAR CONSTANT
-Ir_Taille_Robot : INT := 400 ;	
-Ir_variable_secu :LREAL := 1.3 ;
+Ir_Taille_Robot : INT := 250 ;	
+Ir_variable_secu :LREAL := 1.2 ;
 
 
 END_VAR
@@ -324,15 +332,7 @@ FOR ind := 0 TO 35 DO
 END_FOR
 
 
-Calcul_LIDAR_1(
-	Distance_Freinage:= Ir_variable_secu , 
-	tailleRobot:= Ir_Taille_Robot , 
-	accel_Robot:=  GVL_Servos.ReglageAcceleration, 
-	senseEvitement:= , 
-	zoneSelectionee:=  , 
-	AU=> GVL_Base.Ix_AU_Lidar, 
-	Ix_Stop_Evitement=> GVL_Servos.BpFastStop, 
-	Distance_AU:=GVL_Servos.ReglageVitesse );
+
 
 ]]></ST>
     </Implementation>

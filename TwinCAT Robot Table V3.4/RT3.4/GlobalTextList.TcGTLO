@@ -340,6 +340,11 @@ position"</v>
               <l n="LanguageTexts" t="ArrayList" />
             </o>
             <o>
+              <v n="TextID">"464"</v>
+              <v n="TextDefault">"Visu Lidar"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
               <v n="TextID">"21"</v>
               <v n="TextDefault">"Visu Moteur Base"</v>
               <l n="LanguageTexts" t="ArrayList" />
