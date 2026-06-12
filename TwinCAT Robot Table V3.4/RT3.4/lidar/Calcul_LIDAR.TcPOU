@@ -7,7 +7,7 @@ VAR_INPUT//VARIABLE A MODIFIER dans la GVL
 	tailleRobot :INT;  //diametre maximum du robot
 	accel_Robot : LREAL; //déceleration du robot OU 1 si utilisé sans prise en compte de la vitesse
 	senseEvitement : BOOL; //0 = evitement par la droite, 1= evitement par la gauche
-	zoneSelectionee: ARRAY[1..36] OF BOOL;
+	zoneSelectionee: ARRAY[1..36] OF BOOL; // il y a que 35
 END_VAR
 VAR_OUTPUT
 	AU : BOOL; //a utiliser dans tous les cas 
@@ -48,7 +48,7 @@ VAR
 	robotDetect: BOOL;
 	difX: LREAL;
 	
-	// Miennes 
+	(*// Miennes 
 	case2AU : INT ;
 	TON : TON ;
 	Mx_DistanceXReel : LREAL ;
@@ -56,7 +56,7 @@ VAR
 	TON1: TON;
 	trest: INT;
 	test2: INT;
-	test1: INT;
+	test1: INT;*)
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -98,37 +98,50 @@ FOR i :=1 TO 36 DO //detection colision
 	IF i = 1 THEN //variable pour le reset de l'AU et du freinage
 		i2 := 0;
 	END_IF
-	IF zoneSelectionee[i] AND decodage_lidar.Sector10[i].MedianDistanceMm < distancefreinage AND accel_Robot <> 1 AND decodage_lidar.Sector10[i].MedianDistanceMm > distanceAU AND case1 < 10 AND NOT AU (*AND NOT gvl.corectionEnCour*) THEN //detection freinage avec vitese
-		case1 :=10;
+	IF zoneSelectionee[i] AND decodage_lidar.Sector10[i-1].MedianDistanceMm < distancefreinage AND accel_Robot <> 1 AND decodage_lidar.Sector10[i-1].MedianDistanceMm > distanceAU AND case1 < 10 AND NOT AU (*AND NOT gvl.corectionEnCour*) THEN //detection freinage avec vitese
+		GVL_Lidar.Qx_Lampe_Vert_Normal:= 0;
+		GVL_Lidar.Qx_Lampe_Jaune_Stop := 1;
+		GVL_Lidar.Qx_Lampe_Rouge_AU := 0;
+        //case1 :=10;
 		
 	END_IF
-	IF zoneSelectionee[i] AND accel_Robot <> 1 AND decodage_lidar.Sector10[i].MedianDistanceMm <= distanceAU THEN //detection AU avec vitesse
-		AU :=1; 
+	IF zoneSelectionee[i] AND accel_Robot <> 1 AND decodage_lidar.Sector10[i-1].MedianDistanceMm <= distanceAU THEN //detection AU avec vitesse
+		AU :=1;
+        GVL_Lidar.Qx_Lampe_Vert_Normal:= 0;
+		GVL_Lidar.Qx_Lampe_Jaune_Stop := 0;
+		GVL_Lidar.Qx_Lampe_Rouge_AU := 1; 
 		i2 := i2+1;
-		test2 :=2;
 		
 	END_IF
 	
-	IF zoneSelectionee[i] AND decodage_lidar.Sector10[i].MedianDistanceMm < distanceFreinage AND accel_Robot = 1 (*AND NOT gvl.corectionEnCour*) AND case1 < 10 AND NOT AU  THEN //detection freinage sans vitesse
-		case1 :=10;
+	IF zoneSelectionee[i] AND decodage_lidar.Sector10[i-1].MedianDistanceMm < distanceFreinage AND accel_Robot = 1 (*AND NOT gvl.corectionEnCour*) AND case1 < 10 AND NOT AU  THEN //detection freinage sans vitesse
+		GVL_Lidar.Qx_Lampe_Vert_Normal:= 0;
+		GVL_Lidar.Qx_Lampe_Jaune_Stop := 1;
+		GVL_Lidar.Qx_Lampe_Rouge_AU := 0;
+        //case1 :=10;
 		
 	END_IF
-	IF zoneSelectionee[i] AND decodage_lidar.Sector10[i].MedianDistanceMm < distanceAU AND accel_Robot = 1 THEN //detection AU sans vitesse
+	IF zoneSelectionee[i] AND decodage_lidar.Sector10[i-1].MedianDistanceMm < distanceAU AND accel_Robot = 1 THEN //detection AU sans vitesse
+		
 		AU :=1;
+		GVL_Lidar.Qx_Lampe_Vert_Normal:= 0;
+		GVL_Lidar.Qx_Lampe_Jaune_Stop := 0;
+		GVL_Lidar.Qx_Lampe_Rouge_AU := 1;
 		i2:=i2+1;
 		
 	END_IF
 	IF i2 = 0 THEN //reset AU
 		AU :=0;
 	END_IF
-	test1 :=3;
 END_FOR
 
+IF NOT AU AND GVL_Lidar.Qx_Lampe_Rouge_AU THEN
 
+GVL_Lidar.Qx_Lampe_Vert_Normal:= 1;
+GVL_Lidar.Qx_Lampe_Jaune_Stop := 0;
+GVL_Lidar.Qx_Lampe_Rouge_AU := 0;
 
-
-
-
+END_IF
 
 
 
@@ -138,26 +151,61 @@ END_FOR
 
 
 
-IF NOT AU OR GVL_Servos.Mx_Hoaming_BUSY THEN 
-case1 :=1000;
-END_IF 
-
-IF AU OR NOT GVL_Servos.Mx_Hoaming_BUSY THEN 
-case1 :=0;
-END_IF 
 
 
-
-
-
-
-IF ( zoneSelectionee[1] AND decodage_lidar.Sector10[1].MedianDistanceMm > distancefreinage AND zoneSelectionee[2] AND decodage_lidar.Sector10[2].MedianDistanceMm > distancefreinage AND zoneSelectionee[36] AND decodage_lidar.Sector10[1].MedianDistanceMm > distancefreinage ) AND NOT TON.Q AND case1 = 10   THEN //detection freinage avec vitese
+IF ( zoneSelectionee[1] AND decodage_lidar.Sector10[1].MedianDistanceMm > distancefreinage AND zoneSelectionee[2] AND decodage_lidar.Sector10[2].MedianDistanceMm > distancefreinage AND zoneSelectionee[36] AND decodage_lidar.Sector10[1].MedianDistanceMm > distancefreinage ) AND (*NOT TON.Q AND*) case1 = 10   THEN //detection freinage avec vitese
 	case1 :=1;
 		
 END_IF
 
+CASE case1 OF
 
-TON( IN := case1 = 10, PT := T#10S);
+
+0:  GVL_Lidar.zoneSelectionee[36]:=1;
+    GVL_Lidar.zoneSelectionee[1]:=1;
+    GVL_Lidar.zoneSelectionee[2]:=1;
+   
+
+
+1:  GVL_Servos.BpFastStop := 0;
+    GVL_Servos.BpDeplacement := 0;
+
+IF  NOT GVL_Servos.BpFastStop AND NOT GVL_Servos.BpDeplacement THEN 
+	case1 :=0;
+
+END_IF
+	
+
+
+10: GVL_Servos.BpFastStop := 1;
+    GVL_Servos.BpDeplacement := 0;
+	
+
+1000: GVL_Lidar.zoneSelectionee[36]:=0;
+    GVL_Lidar.zoneSelectionee[1]:=0;
+    GVL_Lidar.zoneSelectionee[2]:=0;
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+END_CASE 
+
+
+(*TON( IN := case1 = 10, PT := T#10S);
 
 TON1( IN := case1 = 1, PT := T#2S);
 
@@ -173,8 +221,8 @@ Ix_Stop_Evitement:= FALSE ;
 1: IF TON1.Q THEN 
 
  Ix_Stop_Evitement:= FALSE ; 
-   GVL_Servos.PosXObject := Mx_DistanceXReel;
-   GVL_Servos.PosYObject := Mx_DistanceYReel;
+   //GVL_Servos.PosXObject := Mx_DistanceXReel;
+   //GVL_Servos.PosYObject := Mx_DistanceYReel;
 END_IF
    
 IF GVL_Servos.PosYObject >1  AND GVL_Servos.PosXObject > 1 THEN
@@ -191,7 +239,7 @@ END_IF
 
 10: 
 GVL_Servos.BpDeplacement := FALSE ;
-Ix_Stop_Evitement:= TRUE ;
+GVL_Servos.BpFastStop:= TRUE ;
 //GVL_Lidar.LampeEvitement := 1; 
 //GVL_Servos.PosXObject := 0;
 //GVL_Servos.PosYObject := 0;
@@ -202,8 +250,8 @@ case1 :=12;
 END_IF
 
 
-12: Mx_DistanceXReel := GVL_Servos.PosXObject ;
-	Mx_DistanceYReel := GVL_Servos.PosYObject ;
+12: //Mx_DistanceXReel := GVL_Servos.PosXObject ;
+	//Mx_DistanceYReel := GVL_Servos.PosYObject ;
 	
     case1 :=13;
 	
@@ -343,7 +391,7 @@ END_IF
 
 END_CASE
 
-*)
+*)*)
 
 ]]></ST>
     </Implementation>

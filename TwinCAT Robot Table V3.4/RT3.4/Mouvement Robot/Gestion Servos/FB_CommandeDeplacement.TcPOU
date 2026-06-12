@@ -27,7 +27,7 @@ VAR_INPUT
 	lrVitMax	: LREAL := 400;	//Vitesse max du robot [mm/s]
 	lrAccMax	: LREAL := 400;	//Accéleration max du robot [mm/s^2]
 	
-	lrAccStop	: lreal := 500;	//Definit l'accéleration lors d'un stop du robot (stop ou reset)
+	lrAccStop	: LREAL := 1500;	//Definit l'accéleration lors d'un stop du robot (stop ou reset)
 	
 	lrEntraxeMot	: LREAL;	//Entraxe des roues motrices du robot (en [mm])
 	

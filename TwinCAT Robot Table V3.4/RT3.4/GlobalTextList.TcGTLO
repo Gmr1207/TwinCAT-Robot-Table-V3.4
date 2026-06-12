@@ -204,6 +204,11 @@ position"</v>
               <l n="LanguageTexts" t="ArrayList" />
             </o>
             <o>
+              <v n="TextID">"102"</v>
+              <v n="TextDefault">"Pas De Detection"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
               <v n="TextID">"307"</v>
               <v n="TextDefault">"Pos. Bas"</v>
               <l n="LanguageTexts" t="ArrayList" />
@@ -242,6 +247,11 @@ position"</v>
             <o>
               <v n="TextID">"442"</v>
               <v n="TextDefault">"Power OK"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"845"</v>
+              <v n="TextDefault">"Près (Fast STOP)"</v>
               <l n="LanguageTexts" t="ArrayList" />
             </o>
             <o>
@@ -317,6 +327,11 @@ position"</v>
             <o>
               <v n="TextID">"17"</v>
               <v n="TextDefault">"Torque"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"767"</v>
+              <v n="TextDefault">"Trop Près (AU)"</v>
               <l n="LanguageTexts" t="ArrayList" />
             </o>
             <o>

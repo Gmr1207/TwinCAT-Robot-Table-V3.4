@@ -2,7 +2,7 @@
 <TcPlcObject Version="1.1.0.1">
   <Task Name="Task_Lidar" Id="{1ef5a820-bc00-4af2-ada1-88958a28586a}">
     <!--CycleTime in micro seconds.-->
-    <CycleTime>5000</CycleTime>
+    <CycleTime>3000</CycleTime>
     <Priority>5</Priority>
     <PouCall>
       <Name>decodage_lidar</Name>

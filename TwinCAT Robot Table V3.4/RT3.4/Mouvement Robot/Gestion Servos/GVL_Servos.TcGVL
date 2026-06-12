@@ -34,7 +34,7 @@ QX_Hoaming_Fini : BOOL ;
 	BpMarcheArriere: BOOL;
 	ObjectifAngle: LREAL;
 	ObjectifDistance: LREAL;
-	ReglageStop: LREAL := 1000 ;
+	ReglageStop: LREAL := 1500 ;
 	ReglageAcceleration: LREAL := 400 ;
 	ReglageVitesse: LREAL :=400  ; 
 	QxDeplacementActif: BOOL;
