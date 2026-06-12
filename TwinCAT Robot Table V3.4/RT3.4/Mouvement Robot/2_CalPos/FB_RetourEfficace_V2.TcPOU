@@ -11,6 +11,7 @@ VAR_OUTPUT
 END_VAR
 VAR
 RetourEfficace_Step : INT ;	
+Jeu_Max : LREAL := 0.3 ;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[IF Ix_RetourEfficace AND GVL_Servos.Modedeplacement = 0 THEN
@@ -18,13 +19,10 @@ END_VAR]]></Declaration>
 END_IF
 
 
-IF GVL_Servos.Modedeplacement <> 0 AND RetourEfficace_Step = 1 THEN
+IF ( GVL_Servos.Modedeplacement <> 0 AND RetourEfficace_Step = 1 ) OR ( NOT Ix_RetourEfficace AND RetourEfficace_Step = 1 ) THEN
     RetourEfficace_Step := 30;
 END_IF
 
-IF NOT Ix_RetourEfficace AND RetourEfficace_Step = 1 THEN
-    RetourEfficace_Step := 30;
-END_IF
 
 
 CASE RetourEfficace_Step OF
@@ -34,7 +32,7 @@ CASE RetourEfficace_Step OF
 
     1:
         
-        IF GVL_Cal_Pos.IrPosX> GVL_Servos.PosXObject OR GVL_Cal_Pos.IrPosY > GVL_Servos.PosYObject THEN
+        IF (GVL_Cal_Pos.IrPosX > GVL_Servos.PosXObject + Jeu_Max ) OR ( GVL_Cal_Pos.IrPosY > GVL_Servos.PosYObject + Jeu_Max ) THEN
             GVL_Servos.BpMarcheArriere := TRUE;
         ELSE
             GVL_Servos.BpMarcheArriere := FALSE;

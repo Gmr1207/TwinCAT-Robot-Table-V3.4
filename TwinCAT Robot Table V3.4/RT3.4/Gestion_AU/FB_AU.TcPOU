@@ -14,7 +14,17 @@ VAR
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[IF NOT Ix_nAU AND NOT Ix_AU_Lidar  THEN
+      <ST><![CDATA[
+IF (NOT Ix_nAU AND NOT Ix_AU_Lidar) OR Ix_AU_Lidar THEN
+    Qx_AU := 1;
+ELSE
+    Qx_AU := 0;
+END_IF
+
+
+
+
+(*IF NOT Ix_nAU AND NOT Ix_AU_Lidar  THEN
 (*GVL_Lidar.zoneSelectionee_GVL[36]:=0;
 GVL_Lidar.zoneSelectionee_GVL[1]:=0;
 GVL_Lidar.zoneSelectionee_GVL[2]:=0; *)
@@ -36,7 +46,7 @@ ELSE
 
 Qx_AU :=0  ;		
 
-END_IF]]></ST>
+END_IF*)]]></ST>
     </Implementation>
   </POU>
 </TcPlcObject>

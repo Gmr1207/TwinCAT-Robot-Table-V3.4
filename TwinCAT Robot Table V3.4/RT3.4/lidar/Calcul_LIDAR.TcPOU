@@ -54,6 +54,9 @@ VAR
 	Mx_DistanceXReel : LREAL ;
 	Mx_DistanceYReel : LREAL ;
 	TON1: TON;
+	trest: INT;
+	test2: INT;
+	test1: INT;
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -102,6 +105,7 @@ FOR i :=1 TO 36 DO //detection colision
 	IF zoneSelectionee[i] AND accel_Robot <> 1 AND decodage_lidar.Sector10[i].MedianDistanceMm <= distanceAU THEN //detection AU avec vitesse
 		AU :=1; 
 		i2 := i2+1;
+		test2 :=2;
 		
 	END_IF
 	
@@ -117,12 +121,8 @@ FOR i :=1 TO 36 DO //detection colision
 	IF i2 = 0 THEN //reset AU
 		AU :=0;
 	END_IF
+	test1 :=3;
 END_FOR
-
-
-
-
-
 
 
 
@@ -163,9 +163,9 @@ TON1( IN := case1 = 1, PT := T#2S);
 
 CASE case1 OF
 
-0:	zoneSelectionee[36]:=1;
-    zoneSelectionee[1]:=1;
-    zoneSelectionee[2]:=1;
+0:	GVL_Lidar.zoneSelectionee[36]:=1;
+    GVL_Lidar.zoneSelectionee[1]:=1;
+    GVL_Lidar.zoneSelectionee[2]:=1;
 //GVL_Lidar.LampeEvitement := 0; 
 
 Ix_Stop_Evitement:= FALSE ; 
@@ -243,9 +243,9 @@ END_IF
 
 
 30: IF case1 = 30 AND ( GVL_Servos.ObjectifAngle = 90 OR GVL_Servos.ObjectifAngle = -90 ) THEN 
-	zoneSelectionee[36]:=1;
-    zoneSelectionee[1]:=1;
-    zoneSelectionee[2]:=1;
+	GVL_Lidar.zoneSelectionee[36]:=1;
+    GVL_Lidar.zoneSelectionee[1]:=1;
+    GVL_Lidar.zoneSelectionee[2]:=1;
 	GVL_Servos.BpDeplacement := TRUE ;
 	case1 := 40;
 END_IF
@@ -298,9 +298,9 @@ IF case1 = 80 AND GVL_Servos.QxDeplacementDone   THEN
      case1 := 0;
 END_IF
 
-1000: zoneSelectionee[36]:=0;
-    zoneSelectionee[1]:=0;
-    zoneSelectionee[2]:=0;
+1000: GVL_Lidar.zoneSelectionee[36]:=0;
+    GVL_Lidar.zoneSelectionee[1]:=0;
+    GVL_Lidar.zoneSelectionee[2]:=0;
 
 END_CASE 
 

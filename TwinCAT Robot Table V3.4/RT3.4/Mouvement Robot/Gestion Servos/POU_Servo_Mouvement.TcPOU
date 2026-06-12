@@ -12,7 +12,6 @@ VAR
 	LR_Pos_ADVX: LREAL;
 	LR_Pos_ADVY: LREAL;
 	BOOL_Couleur: BOOL;
-	FB_AU_0: FB_AU;
 	FB_RetourEfficace_V2_0: FB_RetourEfficace_V2;
 END_VAR
 ]]></Declaration>

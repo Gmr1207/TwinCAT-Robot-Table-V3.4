@@ -46,7 +46,7 @@ Sector10   : ARRAY[0..35] OF ST_Sector10Deg; //les distance par lot de 10°
     NewScanReady   : BOOL;
     idx360         : INT;
 
-    MAX_DISTANCE  : UINT := 12000; // 12 m
+    MAX_DISTANCE  : UINT := 50000; // 12 m // à envever dans le futur si j'ai le temps
 
     //calcul angle
     startDeg  : REAL;
@@ -85,7 +85,7 @@ Sector10   : ARRAY[0..35] OF ST_Sector10Deg; //les distance par lot de 10°
 	Y : ARRAY[0..359]OF REAL;
 	startAngle: INT;
 	normalizedAngleIdx: INT;
-	zoneSelectionee: ARRAY[1..36] OF BOOL;	
+	
 END_VAR
 
 VAR CONSTANT //pour le CRC
@@ -134,8 +134,8 @@ VAR
 END_VAR
 
 VAR CONSTANT
-Ir_Taille_Robot : INT := 250 ;	
-Ir_variable_secu :LREAL := 1.2 ;
+Ir_Taille_Robot : INT := 350 ;	
+Ir_variable_secu :LREAL := 1.4 ;
 
 
 END_VAR

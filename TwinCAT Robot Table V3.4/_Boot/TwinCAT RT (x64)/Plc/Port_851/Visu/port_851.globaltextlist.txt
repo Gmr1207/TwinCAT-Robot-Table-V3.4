@@ -65,6 +65,7 @@ Id;Default
 342;Visu Config Dyna
 380;Visu Lancement PY + Steam
 280;Visu LIDAR
+464;Visu Lidar
 21;Visu Moteur Base
 351;Visu Moteur Test
 581;Visu Pince

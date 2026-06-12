@@ -2200,7 +2200,7 @@ External Setpoint Generation:
 		</Motion>
 		<Plc>
 			<Project GUID="{69A561A3-A2A9-4B1A-8871-FBE5325B0915}" Name="RT3.4" PrjFilePath="RT3.4\RT3.4.plcproj" TmcFilePath="RT3.4\RT3.4.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{E46BC809-CCBB-81C2-3F8E-24BC615C5768}" TmcPath="RT3.4\RT3.4.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{FF54DE68-4168-F793-60F3-F011DE3F0825}" TmcPath="RT3.4\RT3.4.tmc">
 					<Name>RT3 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="2" ContextId="4" AreaNo="65">

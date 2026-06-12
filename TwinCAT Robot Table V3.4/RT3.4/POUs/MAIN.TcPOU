@@ -192,7 +192,7 @@ END_VAR
                         <v n="BoxType">"Calcul_LIDAR"</v>
                         <o n="Instance" t="Operand">
                           <v n="Operand">"Calcul_LIDAR"</v>
-                          <v n="Type">"CALCUL_LIDAR"</v>
+                          <v n="Type">"Calcul_LIDAR"</v>
                           <v n="Comment">""</v>
                           <v n="SymbolComment">""</v>
                           <v n="Address">""</v>
@@ -274,7 +274,7 @@ END_VAR
                           </o>
                           <o>
                             <o n="Operand" t="Operand">
-                              <v n="Operand">"GVL_Servos.ReglageAcceleration"</v>
+                              <v n="Operand">"GVL_Servos.ReglageStop"</v>
                               <v n="Type">"LREAL"</v>
                               <v n="Comment">""</v>
                               <v n="SymbolComment">""</v>
@@ -312,7 +312,7 @@ END_VAR
                           </o>
                           <o>
                             <o n="Operand" t="Operand">
-                              <v n="Operand">"decodage_lidar.zoneSelectionee"</v>
+                              <v n="Operand">"GVL_Lidar.zoneSelectionee"</v>
                               <v n="Type">"ARRAY [1..36] OF BOOL"</v>
                               <v n="Comment">""</v>
                               <v n="SymbolComment">""</v>
