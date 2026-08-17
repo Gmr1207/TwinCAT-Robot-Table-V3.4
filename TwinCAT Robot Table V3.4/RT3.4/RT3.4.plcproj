@@ -9,7 +9,7 @@
     <WriteProductVersion>false</WriteProductVersion>
     <GenerateTpy>false</GenerateTpy>
     <Name>RT3_4</Name>
-    <ProgramVersion>3.1.4026.20</ProgramVersion>
+    <ProgramVersion>3.1.4026.25</ProgramVersion>
     <Application>{23d7bcf3-ce48-46b2-b68e-1622945aa83e}</Application>
     <TypeSystem>{8f094175-dc62-4896-b91e-03de3c597b88}</TypeSystem>
     <Implicit_Task_Info>{9d2efba2-ec31-42c0-be6e-9f2e5d15335e}</Implicit_Task_Info>
@@ -32,6 +32,9 @@
     <Compile Include="Dynamixel\MoveDXL.TcVIS">
       <SubType>Code</SubType>
       <DependentUpon>Visualization Manager.TcVMO</DependentUpon>
+    </Compile>
+    <Compile Include="Dynamixel\POU_test.TcPOU">
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="Dynamixel\P_Dynamixel.TcPOU">
       <SubType>Code</SubType>
@@ -176,11 +179,16 @@
     <Folder Include="Mouvement Robot" />
     <Folder Include="Mouvement Robot\2_CalPos" />
     <Folder Include="Mouvement Robot\Gestion Servos" />
+    <Folder Include="NewFolder1" />
     <Folder Include="Turbine" />
     <Folder Include="VISUs" />
     <Folder Include="POUs" />
   </ItemGroup>
   <ItemGroup>
+    <PlaceholderReference Include="Dynamixel">
+      <DefaultResolution>Dynamixel, * (CPNV)</DefaultResolution>
+      <Namespace>Dynamixel</Namespace>
+    </PlaceholderReference>
     <PlaceholderReference Include="Struckig">
       <DefaultResolution>Struckig, * (Stefan Besler)</DefaultResolution>
       <Namespace>Struckig</Namespace>
@@ -270,9 +278,6 @@
     <LibraryReference Include="CmpSettings,3.5.17.0,System">
       <Namespace>CmpSettings</Namespace>
     </LibraryReference>
-    <LibraryReference Include="Dynamixel,3.2.2,CPNV">
-      <Namespace>Dynamixel</Namespace>
-    </LibraryReference>
   </ItemGroup>
   <ItemGroup>
     <PlaceholderResolution Include="System_VisuElems">
@@ -282,8 +287,8 @@
   <ProjectExtensions>
     <PlcProjectOptions>
       <XmlArchive>
-  <Data>
-    <o xml:space="preserve" t="OptionKey">
+        <Data>
+          <o xml:space="preserve" t="OptionKey">
       <v n="Name">"&lt;ProjectRoot&gt;"</v>
       <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
         <v>{192FAD59-8248-4824-A8DE-9177C94C195A}</v>
@@ -364,14 +369,14 @@
       </d>
       <d n="Values" t="Hashtable" />
     </o>
-  </Data>
-  <TypeList>
-    <Type n="Boolean">System.Boolean</Type>
-    <Type n="Hashtable">System.Collections.Hashtable</Type>
-    <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
-    <Type n="String">System.String</Type>
-  </TypeList>
-</XmlArchive>
+        </Data>
+        <TypeList>
+          <Type n="Boolean">System.Boolean</Type>
+          <Type n="Hashtable">System.Collections.Hashtable</Type>
+          <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
+          <Type n="String">System.String</Type>
+        </TypeList>
+      </XmlArchive>
     </PlcProjectOptions>
   </ProjectExtensions>
 </Project>
