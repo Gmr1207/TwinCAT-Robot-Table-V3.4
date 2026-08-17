@@ -4,9 +4,6 @@
     <Declaration><![CDATA[{attribute 'qualified_only'}
 VAR_GLOBAL
 zoneSelectionee: ARRAY[1..36] OF BOOL;	
-Qx_Lampe_Rouge_AU : BOOL ;
-Qx_Lampe_Jaune_Stop : BOOL ;
-Qx_Lampe_Vert_Normal : BOOL ;
 END_VAR]]></Declaration>
   </GVL>
 </TcPlcObject>

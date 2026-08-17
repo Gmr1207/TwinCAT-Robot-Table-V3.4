@@ -1570,7 +1570,7 @@ External Setpoint Generation:
 				<Task Id="8" Priority="3" CycleTime="50000" AmsPort="353" AdtTasks="true">
 					<Name>Task CallPos</Name>
 				</Task>
-				<Task Id="9" Priority="5" CycleTime="30000" AmsPort="354" AdtTasks="true">
+				<Task Id="9" Priority="5" CycleTime="50000" AmsPort="354" AdtTasks="true">
 					<Name>Task Lidar</Name>
 				</Task>
 				<Task Id="10" Priority="6" CycleTime="20000" AmsPort="355" AdtTasks="true">
@@ -2200,7 +2200,7 @@ External Setpoint Generation:
 		</Motion>
 		<Plc>
 			<Project GUID="{69A561A3-A2A9-4B1A-8871-FBE5325B0915}" Name="RT3.4" PrjFilePath="RT3.4\RT3.4.plcproj" TmcFilePath="RT3.4\RT3.4.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{ABD3D505-952C-2D53-F64B-3DCFD8452025}" TmcPath="RT3.4\RT3.4.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{FF54DE68-4168-F793-60F3-F011DE3F0825}" TmcPath="RT3.4\RT3.4.tmc">
 					<Name>RT3 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="2" ContextId="4" AreaNo="65">
@@ -2330,7 +2330,7 @@ External Setpoint Generation:
 								<OTCID>#x02010090</OTCID>
 							</ManualConfig>
 							<Priority>5</Priority>
-							<CycleTime>3000000</CycleTime>
+							<CycleTime>5000000</CycleTime>
 						</Context>
 						<Context>
 							<Id>3</Id>

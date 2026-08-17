@@ -38,7 +38,6 @@ Id;Default
 268;OFF
 596;ON
 880;Option
-102;Pas De Detection
 307;Pos. Bas
 169;Pos. Haut
 993;Pos. Millieu
@@ -47,7 +46,6 @@ Id;Default
 269;Position Y (mm)
 313;Power Moteurs 
 442;Power OK
-845;Près (Fast STOP)
 263;Renommer
 390;Reset
 233;Reset All
@@ -63,7 +61,6 @@ Id;Default
 89;Stop
 834;Supprimer
 17;Torque
-767;Trop Près (AU)
 448;Visu Base
 342;Visu Config Dyna
 380;Visu Lancement PY + Steam
